@@ -1,0 +1,5 @@
+{% for intf in interfaces %}
+set interfaces ethernet {{ intf.name }} address {{ intf.ip }}/{{ intf.prefixlen }}
+set protocols ospf area 0 network {{ intf.network }}
+{% endfor %}
+set protocols ospf parameters router-id {{ router_id }}

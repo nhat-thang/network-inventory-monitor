@@ -1,0 +1,21 @@
+# OSPF lab plan (area 0). Matches lab/ip-plan.md.
+R1:
+  router_id: 1.1.1.1
+  interfaces:
+    - {name: GigabitEthernet0/1, address: 10.0.12.1/30}
+    - {name: GigabitEthernet0/2, address: 10.0.13.1/30}
+R2:
+  router_id: 2.2.2.2
+  interfaces:
+    - {name: GigabitEthernet0/1, address: 10.0.12.2/30}
+    - {name: GigabitEthernet0/2, address: 10.0.24.1/30}
+VY1:
+  router_id: 3.3.3.3
+  interfaces:
+    - {name: eth1, address: 10.0.13.2/30}
+    - {name: eth2, address: 10.0.34.1/30}
+VY2:
+  router_id: 4.4.4.4
+  interfaces:
+    - {name: eth1, address: 10.0.24.2/30}
+    - {name: eth2, address: 10.0.34.2/30}

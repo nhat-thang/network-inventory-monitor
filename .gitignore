@@ -1,0 +1,30 @@
+# Secrets — never commit real credentials
+.env
+*.pem
+*.key
+
+# Runtime output (backups, reports, logs)
+source-code/output/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+
+# Router images (large, licensed)
+*.qcow2
+*.img
+*.iso
+
+# GNS3 temporary files
+*.gns3.backup
+project-files/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

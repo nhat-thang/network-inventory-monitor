@@ -1,0 +1,10 @@
+# VY2 - VyOS - minimal bootstrap (management + SSH only)
+# First login: vyos / vyos. Replace <PASSWORD> with the lab password.
+configure
+set system host-name VY2
+set interfaces ethernet eth0 address 192.168.100.22/24
+set service ssh
+set system login user admin authentication plaintext-password <PASSWORD>
+commit
+save
+exit
