@@ -1,0 +1,20 @@
+{
+  "time": "2026-11-22T16:40:32",
+  "online": [
+    "R1",
+    "R2",
+    "VY1",
+    "VY2"
+  ],
+  "offline": [],
+  "alerts": [
+    {
+      "device": "VY1",
+      "rule": "config_changed",
+      "severity": "info",
+      "message": "Running configuration changed since last scan",
+      "time": "2026-11-22T16:40:32"
+    }
+  ],
+  "report": "report_20261122-164032.md"
+}

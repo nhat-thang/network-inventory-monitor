@@ -1,0 +1,762 @@
+[
+  {
+    "device": "R1",
+    "vendor": "MikroTik RouterOS",
+    "hostname": "R1-MikroTik",
+    "os_version": "RouterOS 7.24.6 (long-term)",
+    "serial": "pNwYzAOYZKB",
+    "uptime_seconds": 2739,
+    "cpu_percent": 0.0,
+    "memory_total_mb": 384.0,
+    "memory_percent": 57.1,
+    "interfaces": [
+      {
+        "name": "ether1",
+        "ip_address": "192.168.100.11/24",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "ether2",
+        "ip_address": "10.0.12.1/30",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "ether3",
+        "ip_address": "10.0.13.1/30",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "ether4",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "ether5",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "ether6",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "ether7",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "ether8",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "lo",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": true
+      }
+    ],
+    "ospf_neighbors": [
+      {
+        "neighbor_id": "2.2.2.2",
+        "address": "10.0.12.2",
+        "interface": "ether2",
+        "state": "Full"
+      },
+      {
+        "neighbor_id": "3.3.3.3",
+        "address": "10.0.13.2",
+        "interface": "ether3",
+        "state": "Full"
+      }
+    ],
+    "routes": [
+      {
+        "prefix": "10.0.12.0/30",
+        "protocol": "connected",
+        "next_hop": null,
+        "interface": "ether2"
+      },
+      {
+        "prefix": "10.0.13.0/30",
+        "protocol": "connected",
+        "next_hop": null,
+        "interface": "ether3"
+      },
+      {
+        "prefix": "10.0.24.0/30",
+        "protocol": "ospf",
+        "next_hop": "10.0.12.2",
+        "interface": "ether2"
+      },
+      {
+        "prefix": "10.0.34.0/30",
+        "protocol": "ospf",
+        "next_hop": "10.0.13.2",
+        "interface": "ether3"
+      },
+      {
+        "prefix": "192.168.100.0/24",
+        "protocol": "connected",
+        "next_hop": null,
+        "interface": "ether1"
+      }
+    ],
+    "lldp_neighbors": [
+      {
+        "local_interface": "ether1",
+        "neighbor": "R2-MikroTik",
+        "neighbor_port": "ether1",
+        "platform": "MikroTik"
+      },
+      {
+        "local_interface": "ether1",
+        "neighbor": "VY1-VyOS",
+        "neighbor_port": "eth0",
+        "platform": "VyOS"
+      },
+      {
+        "local_interface": "ether1",
+        "neighbor": "VY2-VyOS",
+        "neighbor_port": "eth0",
+        "platform": "VyOS"
+      },
+      {
+        "local_interface": "ether2",
+        "neighbor": "R2-MikroTik",
+        "neighbor_port": "ether2",
+        "platform": "MikroTik"
+      },
+      {
+        "local_interface": "ether3",
+        "neighbor": "VY1-VyOS",
+        "neighbor_port": "eth1",
+        "platform": "VyOS"
+      }
+    ],
+    "arp_entries": [
+      {
+        "ip": "192.168.100.1",
+        "mac": "00:50:56:c0:00:03",
+        "interface": "ether1"
+      },
+      {
+        "ip": "10.0.13.2",
+        "mac": "0c:34:e8:75:00:01",
+        "interface": "ether3"
+      },
+      {
+        "ip": "10.0.12.2",
+        "mac": "0c:28:1f:aa:00:01",
+        "interface": "ether2"
+      }
+    ],
+    "config_hash": "fad631ec9ab4538d87b500ad8abc25145b18d4d9d9bbdb4e7405a270b1b23b9e",
+    "compliance": [
+      {
+        "check": "ssh_enabled",
+        "description": "Bật SSH để quản trị",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "telnet_disabled",
+        "description": "Tắt Telnet (không mã hóa)",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "lldp_enabled",
+        "description": "Bật LLDP để phát hiện láng giềng",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "login_banner",
+        "description": "Có banner cảnh báo khi đăng nhập",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "ospf_router_id",
+        "description": "OSPF router-id đúng quy hoạch",
+        "passed": true,
+        "detail": ""
+      }
+    ],
+    "collected_at": "2026-11-22T16:40:24"
+  },
+  {
+    "device": "R2",
+    "vendor": "MikroTik RouterOS",
+    "hostname": "R2-MikroTik",
+    "os_version": "RouterOS 7.24.6 (long-term)",
+    "serial": "3WWC6wGvfYG",
+    "uptime_seconds": 2739,
+    "cpu_percent": 0.0,
+    "memory_total_mb": 384.0,
+    "memory_percent": 57.1,
+    "interfaces": [
+      {
+        "name": "ether1",
+        "ip_address": "192.168.100.12/24",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "ether2",
+        "ip_address": "10.0.12.2/30",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "ether3",
+        "ip_address": "10.0.24.1/30",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "ether4",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "ether5",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "ether6",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "ether7",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "ether8",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "lo",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": true
+      }
+    ],
+    "ospf_neighbors": [
+      {
+        "neighbor_id": "1.1.1.1",
+        "address": "10.0.12.1",
+        "interface": "ether2",
+        "state": "Full"
+      },
+      {
+        "neighbor_id": "4.4.4.4",
+        "address": "10.0.24.2",
+        "interface": "ether3",
+        "state": "Full"
+      }
+    ],
+    "routes": [
+      {
+        "prefix": "10.0.12.0/30",
+        "protocol": "connected",
+        "next_hop": null,
+        "interface": "ether2"
+      },
+      {
+        "prefix": "10.0.13.0/30",
+        "protocol": "ospf",
+        "next_hop": "10.0.12.1",
+        "interface": "ether2"
+      },
+      {
+        "prefix": "10.0.24.0/30",
+        "protocol": "connected",
+        "next_hop": null,
+        "interface": "ether3"
+      },
+      {
+        "prefix": "10.0.34.0/30",
+        "protocol": "ospf",
+        "next_hop": "10.0.24.2",
+        "interface": "ether3"
+      },
+      {
+        "prefix": "192.168.100.0/24",
+        "protocol": "connected",
+        "next_hop": null,
+        "interface": "ether1"
+      }
+    ],
+    "lldp_neighbors": [
+      {
+        "local_interface": "ether1",
+        "neighbor": "R1-MikroTik",
+        "neighbor_port": "ether1",
+        "platform": "MikroTik"
+      },
+      {
+        "local_interface": "ether1",
+        "neighbor": "VY1-VyOS",
+        "neighbor_port": "eth0",
+        "platform": "VyOS"
+      },
+      {
+        "local_interface": "ether1",
+        "neighbor": "VY2-VyOS",
+        "neighbor_port": "eth0",
+        "platform": "VyOS"
+      },
+      {
+        "local_interface": "ether2",
+        "neighbor": "R1-MikroTik",
+        "neighbor_port": "ether2",
+        "platform": "MikroTik"
+      },
+      {
+        "local_interface": "ether3",
+        "neighbor": "VY2-VyOS",
+        "neighbor_port": "eth1",
+        "platform": "VyOS"
+      }
+    ],
+    "arp_entries": [
+      {
+        "ip": "10.0.24.2",
+        "mac": "0c:a3:25:32:00:01",
+        "interface": "ether3"
+      },
+      {
+        "ip": "192.168.100.1",
+        "mac": "00:50:56:c0:00:03",
+        "interface": "ether1"
+      },
+      {
+        "ip": "10.0.12.1",
+        "mac": "0c:a3:0f:fd:00:01",
+        "interface": "ether2"
+      }
+    ],
+    "config_hash": "59f7e4c915b87f23389787187feda0de638976bbad2a74965e04588d11562ff2",
+    "compliance": [
+      {
+        "check": "ssh_enabled",
+        "description": "Bật SSH để quản trị",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "telnet_disabled",
+        "description": "Tắt Telnet (không mã hóa)",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "lldp_enabled",
+        "description": "Bật LLDP để phát hiện láng giềng",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "login_banner",
+        "description": "Có banner cảnh báo khi đăng nhập",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "ospf_router_id",
+        "description": "OSPF router-id đúng quy hoạch",
+        "passed": true,
+        "detail": ""
+      }
+    ],
+    "collected_at": "2026-11-22T16:40:24"
+  },
+  {
+    "device": "VY1",
+    "vendor": "VyOS",
+    "hostname": "VY1-VyOS",
+    "os_version": "VyOS 2026.11.18-0016-rolling",
+    "serial": "fa34e875-1e73-421b-ac99-9afa6eac45a5",
+    "uptime_seconds": 21521,
+    "cpu_percent": 5.0,
+    "memory_total_mb": 974.73,
+    "memory_percent": 56.7,
+    "interfaces": [
+      {
+        "name": "eth0",
+        "ip_address": "192.168.100.21/24",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "eth1",
+        "ip_address": "10.0.13.2/30",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "eth2",
+        "ip_address": "10.0.34.1/30",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "lo",
+        "ip_address": "127.0.0.1/8",
+        "admin_up": true,
+        "oper_up": true
+      }
+    ],
+    "ospf_neighbors": [
+      {
+        "neighbor_id": "1.1.1.1",
+        "address": "10.0.13.1",
+        "interface": "eth1",
+        "state": "Full"
+      },
+      {
+        "neighbor_id": "4.4.4.4",
+        "address": "10.0.34.2",
+        "interface": "eth2",
+        "state": "Full"
+      }
+    ],
+    "routes": [
+      {
+        "prefix": "10.0.12.0/30",
+        "protocol": "ospf",
+        "next_hop": "10.0.13.1",
+        "interface": "eth1"
+      },
+      {
+        "prefix": "10.0.13.0/30",
+        "protocol": "connected",
+        "next_hop": null,
+        "interface": "eth1"
+      },
+      {
+        "prefix": "10.0.13.2/32",
+        "protocol": "local",
+        "next_hop": null,
+        "interface": "eth1"
+      },
+      {
+        "prefix": "10.0.24.0/30",
+        "protocol": "ospf",
+        "next_hop": "10.0.34.2",
+        "interface": "eth2"
+      },
+      {
+        "prefix": "10.0.34.0/30",
+        "protocol": "connected",
+        "next_hop": null,
+        "interface": "eth2"
+      },
+      {
+        "prefix": "10.0.34.1/32",
+        "protocol": "local",
+        "next_hop": null,
+        "interface": "eth2"
+      },
+      {
+        "prefix": "192.168.100.0/24",
+        "protocol": "connected",
+        "next_hop": null,
+        "interface": "eth0"
+      },
+      {
+        "prefix": "192.168.100.21/32",
+        "protocol": "local",
+        "next_hop": null,
+        "interface": "eth0"
+      }
+    ],
+    "lldp_neighbors": [
+      {
+        "local_interface": "eth0",
+        "neighbor": "VY2-VyOS",
+        "neighbor_port": "0c:a3:25:32:00:00",
+        "platform": "VyOS 2026.11.18-0016-rolling"
+      },
+      {
+        "local_interface": "eth0",
+        "neighbor": "R1-MikroTik",
+        "neighbor_port": "ether1",
+        "platform": "MikroTik RouterOS 7.24.6 (long-term) 2026-10-30 08:24:29 CHR"
+      },
+      {
+        "local_interface": "eth0",
+        "neighbor": "R2-MikroTik",
+        "neighbor_port": "ether1",
+        "platform": "MikroTik RouterOS 7.24.6 (long-term) 2026-10-30 08:24:29 CHR"
+      },
+      {
+        "local_interface": "eth1",
+        "neighbor": "R1-MikroTik",
+        "neighbor_port": "ether3",
+        "platform": "MikroTik RouterOS 7.24.6 (long-term) 2026-10-30 08:24:29 CHR"
+      },
+      {
+        "local_interface": "eth2",
+        "neighbor": "VY2-VyOS",
+        "neighbor_port": "0c:a3:25:32:00:02",
+        "platform": "VyOS 2026.11.18-0016-rolling"
+      }
+    ],
+    "arp_entries": [
+      {
+        "ip": "10.0.34.2",
+        "mac": "0c:a3:25:32:00:02",
+        "interface": "eth2"
+      },
+      {
+        "ip": "192.168.100.1",
+        "mac": "00:50:56:c0:00:03",
+        "interface": "eth0"
+      },
+      {
+        "ip": "10.0.13.1",
+        "mac": "0c:a3:0f:fd:00:02",
+        "interface": "eth1"
+      }
+    ],
+    "config_hash": "20502f2c1c3caa4741b84cc4d2f94a74566ba47d48d7b951d0f56fb208c61b7e",
+    "compliance": [
+      {
+        "check": "ssh_enabled",
+        "description": "Bật SSH để quản trị",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "telnet_disabled",
+        "description": "Tắt Telnet (không mã hóa)",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "lldp_enabled",
+        "description": "Bật LLDP để phát hiện láng giềng",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "login_banner",
+        "description": "Có banner cảnh báo khi đăng nhập",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "ospf_router_id",
+        "description": "OSPF router-id đúng quy hoạch",
+        "passed": true,
+        "detail": ""
+      }
+    ],
+    "collected_at": "2026-11-22T16:40:28"
+  },
+  {
+    "device": "VY2",
+    "vendor": "VyOS",
+    "hostname": "VY2-VyOS",
+    "os_version": "VyOS 2026.11.18-0016-rolling",
+    "serial": "6ba32532-d264-444a-b4f9-d471b3d3de02",
+    "uptime_seconds": 780,
+    "cpu_percent": 0.0,
+    "memory_total_mb": 974.73,
+    "memory_percent": 53.6,
+    "interfaces": [
+      {
+        "name": "eth0",
+        "ip_address": "192.168.100.22/24",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "eth1",
+        "ip_address": "10.0.24.2/30",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "eth2",
+        "ip_address": "10.0.34.2/30",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "lo",
+        "ip_address": "127.0.0.1/8",
+        "admin_up": true,
+        "oper_up": true
+      }
+    ],
+    "ospf_neighbors": [
+      {
+        "neighbor_id": "2.2.2.2",
+        "address": "10.0.24.1",
+        "interface": "eth1",
+        "state": "Full"
+      },
+      {
+        "neighbor_id": "3.3.3.3",
+        "address": "10.0.34.1",
+        "interface": "eth2",
+        "state": "Full"
+      }
+    ],
+    "routes": [
+      {
+        "prefix": "10.0.12.0/30",
+        "protocol": "ospf",
+        "next_hop": "10.0.24.1",
+        "interface": "eth1"
+      },
+      {
+        "prefix": "10.0.13.0/30",
+        "protocol": "ospf",
+        "next_hop": "10.0.34.1",
+        "interface": "eth2"
+      },
+      {
+        "prefix": "10.0.24.0/30",
+        "protocol": "connected",
+        "next_hop": null,
+        "interface": "eth1"
+      },
+      {
+        "prefix": "10.0.24.2/32",
+        "protocol": "local",
+        "next_hop": null,
+        "interface": "eth1"
+      },
+      {
+        "prefix": "10.0.34.0/30",
+        "protocol": "connected",
+        "next_hop": null,
+        "interface": "eth2"
+      },
+      {
+        "prefix": "10.0.34.2/32",
+        "protocol": "local",
+        "next_hop": null,
+        "interface": "eth2"
+      },
+      {
+        "prefix": "192.168.100.0/24",
+        "protocol": "connected",
+        "next_hop": null,
+        "interface": "eth0"
+      },
+      {
+        "prefix": "192.168.100.22/32",
+        "protocol": "local",
+        "next_hop": null,
+        "interface": "eth0"
+      }
+    ],
+    "lldp_neighbors": [
+      {
+        "local_interface": "eth0",
+        "neighbor": "R2-MikroTik",
+        "neighbor_port": "ether1",
+        "platform": "MikroTik RouterOS 7.24.6 (long-term) 2026-10-30 08:24:29 CHR"
+      },
+      {
+        "local_interface": "eth0",
+        "neighbor": "R1-MikroTik",
+        "neighbor_port": "ether1",
+        "platform": "MikroTik RouterOS 7.24.6 (long-term) 2026-10-30 08:24:29 CHR"
+      },
+      {
+        "local_interface": "eth0",
+        "neighbor": "VY1-VyOS",
+        "neighbor_port": "0c:34:e8:75:00:00",
+        "platform": "VyOS 2026.11.18-0016-rolling"
+      },
+      {
+        "local_interface": "eth1",
+        "neighbor": "R2-MikroTik",
+        "neighbor_port": "ether3",
+        "platform": "MikroTik RouterOS 7.24.6 (long-term) 2026-10-30 08:24:29 CHR"
+      },
+      {
+        "local_interface": "eth2",
+        "neighbor": "VY1-VyOS",
+        "neighbor_port": "0c:34:e8:75:00:02",
+        "platform": "VyOS 2026.11.18-0016-rolling"
+      }
+    ],
+    "arp_entries": [
+      {
+        "ip": "10.0.24.1",
+        "mac": "0c:28:1f:aa:00:02",
+        "interface": "eth1"
+      },
+      {
+        "ip": "10.0.34.1",
+        "mac": "0c:34:e8:75:00:02",
+        "interface": "eth2"
+      },
+      {
+        "ip": "192.168.100.1",
+        "mac": "00:50:56:c0:00:03",
+        "interface": "eth0"
+      }
+    ],
+    "config_hash": "806b81fd5bc04df85a4aa8268f26c6fd1ab9da9f0a87549ae43a9d047a189614",
+    "compliance": [
+      {
+        "check": "ssh_enabled",
+        "description": "Bật SSH để quản trị",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "telnet_disabled",
+        "description": "Tắt Telnet (không mã hóa)",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "lldp_enabled",
+        "description": "Bật LLDP để phát hiện láng giềng",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "login_banner",
+        "description": "Có banner cảnh báo khi đăng nhập",
+        "passed": true,
+        "detail": ""
+      },
+      {
+        "check": "ospf_router_id",
+        "description": "OSPF router-id đúng quy hoạch",
+        "passed": true,
+        "detail": ""
+      }
+    ],
+    "collected_at": "2026-11-22T16:40:28"
+  }
+]
