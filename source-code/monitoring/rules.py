@@ -132,3 +132,25 @@ class ConfigChangedRule(AnomalyRule):
         if current.config_hash != previous.config_hash:
             return [self._alert(current, "info", "Running configuration changed since last scan")]
         return []
+
+
+class HighMemoryRule(AnomalyRule):
+    """RAM usage above a threshold."""
+
+    def __init__(self, threshold: float = 90.0) -> None:
+        if not 0 < threshold <= 100:
+            raise ValueError("threshold must be in (0, 100]")
+        self._threshold = threshold
+
+    @property
+    def name(self) -> str:
+        return "high_memory"
+
+    def evaluate(self, current: DeviceFacts, previous: Optional[DeviceFacts]) -> List[Alert]:
+        used = current.memory_percent
+        if used is None or used < self._threshold:
+            return []
+        return [self._alert(current, "warning", f"Memory {used:.0f}% used (threshold {self._threshold:.0f}%)")]
+
+    def __repr__(self) -> str:
+        return f"HighMemoryRule(threshold={self._threshold})"

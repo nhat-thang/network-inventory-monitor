@@ -1,0 +1,5 @@
+DAc dst-address=10.0.12.0/30 routing-table=main gateway=ether2 immediate-gw=ether2 distance=0 scope=10 target-scope=5 local-address=10.0.12.1%ether2
+DAc dst-address=10.0.13.0/30 routing-table=main gateway=ether3 immediate-gw=ether3 distance=0 scope=10 target-scope=5 local-address=10.0.13.1%ether3
+DAo dst-address=10.0.24.0/30 routing-table=main gateway=10.0.12.2%ether2 immediate-gw=10.0.12.2%ether2 distance=110 scope=20 target-scope=10
+DAo dst-address=10.0.34.0/30 routing-table=main gateway=10.0.13.2%ether3 immediate-gw=10.0.13.2%ether3 distance=110 scope=20 target-scope=10
+DAc dst-address=192.168.100.0/24 routing-table=main gateway=ether1 immediate-gw=ether1 distance=0 scope=10 target-scope=5 local-address=192.168.100.11%ether1

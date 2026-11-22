@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 from core.credentials import Credentials
-from core.models import InterfaceStatus
+from core.models import InterfaceStatus, LldpNeighbor, OspfNeighbor, RouteEntry
 from devices import CiscoIOSDevice, MikroTikDevice, VyOSDevice
 from devices.parsing import clean_output, duration_to_seconds, terse_line
 
@@ -98,6 +98,8 @@ def test_mikrotik_get_facts_end_to_end(mikrotik):
         cmd["interfaces"]: sample("mikrotik", "interface_terse"),
         cmd["ip_addresses"]: sample("mikrotik", "ip_address_terse"),
         cmd["ospf_neighbors"]: sample("mikrotik", "ospf_neighbor_terse"),
+        cmd["routes"]: sample("mikrotik", "ip_route_terse"),
+        cmd["lldp"]: sample("mikrotik", "ip_neighbor_terse"),
         cmd["arp"]: sample("mikrotik", "ip_arp_terse"),
         cmd["running_config"]: sample("mikrotik", "export"),
     })
@@ -169,12 +171,17 @@ def test_vyos_get_facts_end_to_end(vyos):
         cmd["hostname"]: "\x1b[?2004l\r\nVY1-VyOS",
         cmd["uptime"]: sample("vyos", "show_system_uptime"),
         cmd["interfaces"]: sample("vyos", "show_interfaces"),
-        cmd["ospf_neighbors"]: sample("vyos", "show_ip_ospf_neighbor"),
+        cmd["ospf_neighbors"]: sample("vyos", "show_ip_ospf_neighbor_full"),
+        cmd["routes"]: sample("vyos", "show_ip_route"),
+        cmd["lldp"]: sample("vyos", "show_lldp_neighbors_off"),
+        cmd["memory"]: sample("vyos", "show_system_memory"),
         cmd["arp"]: sample("vyos", "show_arp"),
         cmd["running_config"]: sample("vyos", "show_configuration_commands"),
     })
     facts = vyos.get_facts()
     assert (facts.hostname, facts.uptime_seconds, facts.cpu_percent) == ("VY1-VyOS", 44, 70.0)
+    assert (facts.memory_total_mb, facts.memory_percent) == (974.73, 55.8)
+    assert len(facts.routes) == 8 and len(facts.ospf_neighbors) == 2 and facts.lldp_neighbors == []
     assert all(i.oper_up for i in facts.interfaces)
 
 
@@ -191,3 +198,78 @@ def test_cisco_parsers_with_textfsm():
            "Internet  192.168.100.1           0   0050.5600.0001  ARPA   GigabitEthernet0/0\n")
     assert cisco.parse_arp(arp)[0]["mac"] == "00:50:56:00:00:01"
     assert cisco.parse_cpu("CPU utilization for five seconds: 3%/0%; one minute: 2%; five minutes: 1%") == 1.0
+
+
+# ----------------------------------------- routing table, LLDP, memory (real output)
+def test_mikrotik_routes_lldp_memory_and_full_ospf(mikrotik):
+    routes = mikrotik.parse_routes(sample("mikrotik", "ip_route_terse"))
+    assert routes[0] == RouteEntry("10.0.12.0/30", "connected", None, "ether2")
+    assert routes[2] == RouteEntry("10.0.24.0/30", "ospf", "10.0.12.2", "ether2")
+    assert [r.protocol for r in routes].count("ospf") == 2
+    assert mikrotik.parse_lldp(sample("mikrotik", "ip_neighbor_terse"))[1] == LldpNeighbor(
+        "ether2", "R2-MikroTik", "ether2", "MikroTik")
+    assert mikrotik.parse_memory(sample("mikrotik", "system_resource")) == {"total_mb": 384.0, "used_percent": 54.5}
+    assert mikrotik.parse_ospf_neighbors(sample("mikrotik", "ospf_neighbor_full")) == [
+        OspfNeighbor("3.3.3.3", "10.0.13.2", "ether3", "Full"),
+        OspfNeighbor("2.2.2.2", "10.0.12.2", "ether2", "Full"),
+    ]
+
+
+def test_vyos_routes_memory_and_full_ospf(vyos):
+    routes = vyos.parse_routes(sample("vyos", "show_ip_route"))
+    assert routes[0] == RouteEntry("10.0.12.0/30", "ospf", "10.0.13.1", "eth1")
+    assert routes[2] == RouteEntry("10.0.13.2/32", "local", None, "eth1")
+    assert vyos.parse_memory(sample("vyos", "show_system_memory")) == {"total_mb": 974.73, "used_percent": 55.8}
+    assert [n.neighbor_id for n in vyos.parse_ospf_neighbors(sample("vyos", "show_ip_ospf_neighbor_full"))] == [
+        "1.1.1.1", "4.4.4.4"]
+
+
+def test_vyos_lldp_table():
+    vyos = VyOSDevice("VY1", "192.0.2.21", CREDS)
+    assert vyos.parse_lldp(sample("vyos", "show_lldp_neighbors_off")) == []
+    synthetic = (
+        "Capability Codes: R - Router, B - Bridge, W - Wlan r - Repeater, S - Station\n"
+        "                  D - Docsis, T - Telephone, O - Other\n\n"
+        "Device ID                 Local     Proto  Cap   Platform             Port ID\n"
+        "---------                 -----     -----  ---   --------             -------\n"
+        "R1-MikroTik               eth1      LLDP   BR    MikroTik             ether3\n")
+    assert vyos.parse_lldp(synthetic) == [LldpNeighbor("eth1", "R1-MikroTik", "ether3", "MikroTik")]
+
+
+def test_cisco_routes_lldp_memory():
+    cisco = CiscoIOSDevice("R9", "192.0.2.9", CREDS)
+    routes = cisco.parse_routes(
+        "Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n"
+        "Gateway of last resort is not set\n\n"
+        "      10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\n"
+        "C        10.0.12.0/30 is directly connected, GigabitEthernet0/1\n"
+        "O        10.0.24.0/30 [110/2] via 10.0.12.2, 00:01:02, GigabitEthernet0/1\n")
+    assert routes[1] == RouteEntry("10.0.24.0/30", "ospf", "10.0.12.2", "GigabitEthernet0/1")
+    lldp = cisco.parse_lldp(
+        "Device ID           Local Intf     Hold-time  Capability      Port ID\n"
+        "R2                  Gi0/1          120        R               Gi0/1\n\nTotal entries displayed: 1\n")
+    assert lldp == [LldpNeighbor("Gi0/1", "R2", "Gi0/1", None)]
+    assert cisco.parse_memory("Processor Pool Total:  268435456 Used:  67108864 Free: 201326592") == {
+        "total_mb": 256.0, "used_percent": 25.0}
+
+
+def test_vyos_lldp_detail_format():
+    from devices import VyOSDevice
+    from core.credentials import Credentials
+    from devices.parsing import clean_output
+
+    dev = VyOSDevice("VY1", "192.0.2.1", Credentials("u", "p"))
+    text = clean_output((Path(__file__).parent / "samples" / "vyos" / "show_lldp_neighbors_detail.txt")
+                        .read_text(encoding="utf-8"))  # real output from VY1
+    n = dev.parse_lldp(text)
+    assert [(x.local_interface, x.neighbor, x.neighbor_port) for x in n] == [
+        ("eth0", "R1-MikroTik", "ether1"), ("eth0", "R2-MikroTik", "ether1"),
+        ("eth0", "VY2-VyOS", "0c:a3:25:32:00:00"), ("eth1", "R1-MikroTik", "ether3"),
+        ("eth2", "VY2-VyOS", "0c:a3:25:32:00:02")]
+    assert n[0].platform.startswith("MikroTik RouterOS")
+    table = """Device ID                 Local     Proto  Cap   Platform             Port ID
+---------                 -----     -----  ---   --------             -------
+R1-MikroTik               eth1      LLDP   R     MikroTik RouterOS    ether3
+"""
+    t = dev.parse_lldp(table)
+    assert (t[0].neighbor, t[0].local_interface, t[0].neighbor_port) == ("R1-MikroTik", "eth1", "ether3")

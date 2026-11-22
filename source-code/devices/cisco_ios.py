@@ -8,7 +8,7 @@ Parsing uses the community TextFSM templates (``ntc-templates``).
 import re
 from typing import Any, Dict, List, Optional
 
-from core.models import InterfaceStatus, OspfNeighbor
+from core.models import InterfaceStatus, LldpNeighbor, OspfNeighbor, RouteEntry
 from devices.base import NetworkDevice
 from devices.factory import DeviceFactory
 from devices.parsing import duration_to_seconds
@@ -38,8 +38,11 @@ class CiscoIOSDevice(NetworkDevice):
             "version": "show version",
             "interfaces": "show ip interface brief",
             "ospf_neighbors": "show ip ospf neighbor",
+            "routes": "show ip route",
+            "lldp": "show lldp neighbors",
             "arp": "show ip arp",
             "cpu": "show processes cpu | include CPU utilization",
+            "memory": "show processes memory sorted | include Processor Pool",
             "running_config": "show running-config",
         }
 
@@ -80,6 +83,42 @@ class CiscoIOSDevice(NetworkDevice):
             )
             for row in _textfsm("show ip ospf neighbor", output)
         ]
+
+    _ROUTE_CODES = {"C": "connected", "L": "local", "S": "static", "O": "ospf", "B": "bgp",
+                    "R": "rip", "D": "eigrp"}
+
+    def parse_routes(self, output: str) -> List[RouteEntry]:
+        result = []
+        for row in _textfsm("show ip route", output):
+            hops = row.get("nexthop_ip") or [""]
+            ifaces = row.get("nexthop_if") or [""]
+            hop = hops[0] if isinstance(hops, list) else hops
+            iface = ifaces[0] if isinstance(ifaces, list) else ifaces
+            result.append(RouteEntry(
+                prefix=f"{row['network']}/{row['prefix_length']}",
+                protocol=self._ROUTE_CODES.get(row.get("protocol", "")[:1], "other"),
+                next_hop=hop or None,
+                interface=iface or None,
+            ))
+        return result
+
+    def parse_lldp(self, output: str) -> List[LldpNeighbor]:
+        result = []
+        for row in _textfsm("show lldp neighbors", output):
+            result.append(LldpNeighbor(
+                local_interface=row.get("local_interface", ""),
+                neighbor=row.get("neighbor_name") or row.get("neighbor", ""),
+                neighbor_port=row.get("neighbor_interface") or None,
+                platform=None,
+            ))
+        return result
+
+    def parse_memory(self, output: str) -> Dict[str, Optional[float]]:
+        match = re.search(r"Total:\s*(\d+)\s+Used:\s*(\d+)", output)
+        if not match:
+            return {"total_mb": None, "used_percent": None}
+        total, used = int(match.group(1)), int(match.group(2))
+        return {"total_mb": round(total / 1048576, 1), "used_percent": round(used / total * 100, 1)}
 
     def parse_arp(self, output: str) -> List[Dict[str, Any]]:
         result = []

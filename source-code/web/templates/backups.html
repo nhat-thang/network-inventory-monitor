@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Bản sao lưu cấu hình</h1>
+{% for device, files in backups.items() %}
+<h2>{{ device }} <span class="muted" style="font-weight:normal">({{ files | length }} bản)</span></h2>
+{% if files %}
+<form method="get" action="{{ url_for('backup_diff', device=device) }}">
+<table><thead><tr><th>Cũ</th><th>Mới</th><th>File</th><th>Kích thước</th><th></th></tr></thead><tbody>
+{% for b in files | reverse %}
+<tr>
+  <td><input type="radio" name="old" value="{{ b.name }}" {{ 'checked' if loop.index == 2 }}></td>
+  <td><input type="radio" name="new" value="{{ b.name }}" {{ 'checked' if loop.first }}></td>
+  <td class="mono">{{ b.name }}</td><td class="r">{{ b.stat().st_size }} B</td>
+  <td class="nowrap"><a href="{{ url_for('backup_view', device=device, file_name=b.name) }}">Xem</a> ·
+      <a href="{{ url_for('backup_view', device=device, file_name=b.name, download=1) }}">Tải về</a></td>
+</tr>
+{% endfor %}
+</tbody></table>
+{% if files | length > 1 %}<p><button class="secondary">So sánh 2 bản đã chọn</button></p>{% endif %}
+</form>
+{% else %}<p class="muted">Chưa có bản sao lưu.</p>{% endif %}
+{% endfor %}
+{% endblock %}

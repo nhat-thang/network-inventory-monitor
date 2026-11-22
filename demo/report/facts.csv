@@ -1,4 +1,0 @@
-﻿device,vendor,hostname,os_version,serial,uptime_seconds,cpu_percent,interfaces_total,interfaces_down,ospf_neighbors,arp_entries,collected_at
-R1,MikroTik RouterOS,R1-MikroTik,RouterOS 7.24.6 (long-term),pNwYzAOYZKB,853,0.0,9,6,1,2,2026-11-22T08:43:09
-R2,MikroTik RouterOS,R2-MikroTik,RouterOS 7.24.6 (long-term),3WWC6wGvfYG,849,0.0,9,6,0,2,2026-11-22T08:43:09
-VY1,VyOS,VY1-VyOS,VyOS 2026.11.18-0016-rolling,fa34e875-1e73-421b-ac99-9afa6eac45a5,827,0.0,4,0,1,3,2026-11-22T08:43:12

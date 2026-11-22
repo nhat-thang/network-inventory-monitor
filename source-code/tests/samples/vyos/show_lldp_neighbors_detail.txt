@@ -1,0 +1,141 @@
+[?2004l
+-------------------------------------------------------------------------------
+LLDP neighbors:
+-------------------------------------------------------------------------------
+Interface:    eth0, via: LLDP, RID: 2, Time: 0 day, 00:30:08
+  Chassis:     
+    ChassisID:    mac 0c:a3:0f:fd:00:00
+    SysName:      R1-MikroTik
+    SysDescr:     MikroTik RouterOS 7.24.6 (long-term) 2026-10-30 08:24:29 CHR
+    MgmtIP:       10.0.13.1
+    MgmtIface:    4
+    MgmtIP:       fe80::ea3:fff:fefd:2
+    MgmtIface:    4
+    Capability:   Bridge, off
+    Capability:   Router, on
+  Port:        
+    PortID:       ifname ether1
+    PortDescr:    ether1
+    TTL:          121
+    PMD autoneg:  supported: yes, enabled: no
+      MAU oper type: 10GigBaseR - R PCS/PMA, unknown PMD.
+  LLDP-MED:    
+    Device Type:  Network Connectivity Device
+    Capability:   Capabilities, yes
+-------------------------------------------------------------------------------
+Interface:    eth0, via: LLDP, RID: 3, Time: 0 day, 00:30:08
+  Chassis:     
+    ChassisID:    mac 0c:28:1f:aa:00:00
+    SysName:      R2-MikroTik
+    SysDescr:     MikroTik RouterOS 7.24.6 (long-term) 2026-10-30 08:24:29 CHR
+    MgmtIP:       192.168.100.12
+    MgmtIface:    2
+    MgmtIP:       fe80::e28:1fff:feaa:0
+    MgmtIface:    2
+    Capability:   Bridge, off
+    Capability:   Router, on
+  Port:        
+    PortID:       ifname ether1
+    PortDescr:    ether1
+    TTL:          121
+    PMD autoneg:  supported: yes, enabled: no
+      MAU oper type: 10GigBaseR - R PCS/PMA, unknown PMD.
+  LLDP-MED:    
+    Device Type:  Network Connectivity Device
+    Capability:   Capabilities, yes
+-------------------------------------------------------------------------------
+Interface:    eth0, via: LLDP, RID: 4, Time: 0 day, 00:05:55
+  Chassis:     
+    ChassisID:    mac 0c:a3:25:32:00:00
+    SysName:      VY2-VyOS
+    SysDescr:     VyOS 2026.11.18-0016-rolling
+    MgmtIP:       192.168.100.22
+    MgmtIface:    2
+    MgmtIP:       fe80::200:ff:fe00:0
+    MgmtIface:    1
+    Capability:   Bridge, off
+    Capability:   Router, on
+    Capability:   Wlan, off
+    Capability:   Station, off
+  Port:        
+    PortID:       mac 0c:a3:25:32:00:00
+    PortDescr:    eth0
+    TTL:          120
+    PMD autoneg:  supported: yes, enabled: yes
+      Adv:          10Base-T, HD: yes, FD: yes
+      Adv:          100Base-TX, HD: yes, FD: yes
+      Adv:          1000Base-T, HD: no, FD: yes
+      MAU oper type: 1000BaseTFD - Four-pair Category 5 UTP, full duplex mode
+  LLDP-MED:    
+    Device Type:  Network Connectivity Device
+    Capability:   Capabilities, yes
+    Capability:   Policy, yes
+    Capability:   Location, yes
+    Capability:   MDI/PSE, yes
+    Capability:   MDI/PD, yes
+    Capability:   Inventory, yes
+    Inventory:   
+      Hardware Revision: pc-i440fx-resolute
+      Software Revision: 6.18.64-1-vyos
+      Firmware Revision: 1.17.0-debian-1.17.0-1ubuntu1
+      Manufacturer: QEMU
+      Model:        Ubuntu 26.04 PC (i440FX + PIIX, 
+-------------------------------------------------------------------------------
+Interface:    eth1, via: LLDP, RID: 2, Time: 0 day, 00:30:08
+  Chassis:     
+    ChassisID:    mac 0c:a3:0f:fd:00:00
+    SysName:      R1-MikroTik
+    SysDescr:     MikroTik RouterOS 7.24.6 (long-term) 2026-10-30 08:24:29 CHR
+    MgmtIP:       10.0.13.1
+    MgmtIface:    4
+    MgmtIP:       fe80::ea3:fff:fefd:2
+    MgmtIface:    4
+    Capability:   Bridge, off
+    Capability:   Router, on
+  Port:        
+    PortID:       ifname ether3
+    PortDescr:    ether3
+    TTL:          121
+    PMD autoneg:  supported: yes, enabled: no
+      MAU oper type: 10GigBaseR - R PCS/PMA, unknown PMD.
+  LLDP-MED:    
+    Device Type:  Network Connectivity Device
+    Capability:   Capabilities, yes
+-------------------------------------------------------------------------------
+Interface:    eth2, via: LLDP, RID: 4, Time: 0 day, 00:05:55
+  Chassis:     
+    ChassisID:    mac 0c:a3:25:32:00:00
+    SysName:      VY2-VyOS
+    SysDescr:     VyOS 2026.11.18-0016-rolling
+    MgmtIP:       192.168.100.22
+    MgmtIface:    2
+    MgmtIP:       fe80::200:ff:fe00:0
+    MgmtIface:    1
+    Capability:   Bridge, off
+    Capability:   Router, on
+    Capability:   Wlan, off
+    Capability:   Station, off
+  Port:        
+    PortID:       mac 0c:a3:25:32:00:02
+    PortDescr:    eth2
+    TTL:          120
+    PMD autoneg:  supported: yes, enabled: yes
+      Adv:          10Base-T, HD: yes, FD: yes
+      Adv:          100Base-TX, HD: yes, FD: yes
+      Adv:          1000Base-T, HD: no, FD: yes
+      MAU oper type: 1000BaseTFD - Four-pair Category 5 UTP, full duplex mode
+  LLDP-MED:    
+    Device Type:  Network Connectivity Device
+    Capability:   Capabilities, yes
+    Capability:   Policy, yes
+    Capability:   Location, yes
+    Capability:   MDI/PSE, yes
+    Capability:   MDI/PD, yes
+    Capability:   Inventory, yes
+    Inventory:   
+      Hardware Revision: pc-i440fx-resolute
+      Software Revision: 6.18.64-1-vyos
+      Firmware Revision: 1.17.0-debian-1.17.0-1ubuntu1
+      Manufacturer: QEMU
+      Model:        Ubuntu 26.04 PC (i440FX + PIIX, 
+-------------------------------------------------------------------------------
