@@ -17,7 +17,7 @@ Có ba mức kiểm tra, từ nhanh đến đầy đủ. Hai mức đầu **khô
 ### 1. Bài nộp gồm những gì
 
 ```
-BTL_TDHM_<MaLop>_Nhom1/
+BTL_TDHM_H99_Nhom1/
 ├── README.md           giới thiệu, cài đặt, danh sách lệnh
 ├── docs/               tài liệu kiến trúc (.docx) và các sơ đồ
 ├── demo/               minh chứng chạy thật trên lab (mức A)
