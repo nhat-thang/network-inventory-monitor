@@ -1,0 +1,39 @@
+digraph G {
+  graph [rankdir=TB, fontname="DejaVu Sans", ranksep=0.32, bgcolor="white", pad=0.15];
+  node  [shape=plaintext, fontname="DejaVu Sans", fontsize=11];
+  edge  [color="#5b6475", arrowsize=0.8, penwidth=1.2];
+
+  cli [label=<<table border="1" cellborder="0" cellpadding="7" bgcolor="#e3ecfb" color="#7f8db0" style="rounded">
+    <tr><td><b>Giao diện dòng lệnh – main.py</b></td></tr>
+    <tr><td><font point-size="10">inventory list/add/edit/remove · scan · backup · diff · rollback · deploy-ospf</font></td></tr></table>>];
+
+  app [label=<<table border="1" cellborder="1" cellspacing="5" cellpadding="6" bgcolor="#f4f6fa" color="#8a93a6" style="rounded">
+    <tr><td colspan="6" border="0"><b>Tầng nghiệp vụ</b></td></tr>
+    <tr><td>inventory/<br/><font point-size="9">Inventory</font></td>
+        <td>collectors/<br/><font point-size="9">FactsCollector</font></td>
+        <td>monitoring/<br/><font point-size="9">MonitoringEngine<br/>AnomalyRule ×5</font></td>
+        <td>reporting/<br/><font point-size="9">HtmlReport<br/>AppLogger</font></td>
+        <td>backup/<br/><font point-size="9">BackupManager</font></td>
+        <td>provisioning/<br/><font point-size="9">ConfigPusher<br/>Jinja2</font></td></tr></table>>];
+
+  core [label=<<table border="1" cellborder="1" cellspacing="5" cellpadding="6" bgcolor="#f4f6fa" color="#8a93a6" style="rounded">
+    <tr><td colspan="4" border="0"><b>Tầng lõi – core/</b></td></tr>
+    <tr><td>ConnectionManager<br/><font point-size="9">chạy song song</font></td>
+        <td>models<br/><font point-size="9">DeviceFacts, Alert,<br/>TaskResult</font></td>
+        <td>Credentials<br/><font point-size="9">đọc từ .env</font></td>
+        <td>exceptions<br/><font point-size="9">lỗi riêng của dự án</font></td></tr></table>>];
+
+  dev [label=<<table border="1" cellborder="1" cellspacing="5" cellpadding="6" bgcolor="#f4f6fa" color="#8a93a6" style="rounded">
+    <tr><td colspan="3" border="0"><b>Tầng thiết bị – devices/</b></td></tr>
+    <tr><td colspan="3">DeviceFactory  →  NetworkDevice (lớp trừu tượng)</td></tr>
+    <tr><td>MikroTikDevice</td><td>VyOSDevice</td><td>CiscoIOSDevice</td></tr></table>>];
+
+  ssh [label=<<table border="1" cellborder="0" cellpadding="7" bgcolor="#eef3ec" color="#8aa184" style="rounded">
+    <tr><td><b>Netmiko / Paramiko</b> – SSH cổng 22</td></tr></table>>];
+
+  lab [label=<<table border="1" cellborder="0" cellpadding="7" bgcolor="#eef3ec" color="#8aa184" style="rounded">
+    <tr><td><b>Lab GNS3</b>: R1, R2 (MikroTik CHR) · VY1, VY2 (VyOS)</td></tr>
+    <tr><td><font point-size="10">mạng quản lý 192.168.100.0/24</font></td></tr></table>>];
+
+  cli -> app -> core -> dev -> ssh -> lab;
+}

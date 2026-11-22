@@ -1,0 +1,45 @@
+digraph G {
+  graph [rankdir=BT, fontname="DejaVu Sans", nodesep=0.4, ranksep=0.6, bgcolor="white", pad=0.15];
+  node  [shape=plaintext, fontname="DejaVu Sans", fontsize=9.5];
+  edge  [fontname="DejaVu Sans", fontsize=8.5, color="#4b5263"];
+
+  ND [label=<<table border="1" cellborder="0" cellspacing="0" cellpadding="3" bgcolor="#f4f6fa" color="#4b5263">
+   <tr><td bgcolor="#dfe6f3"><i>«abstract»</i><br/><b><i>NetworkDevice</i></b></td></tr>
+   <tr><td align="left" balign="left">- _name, _host, _port, _group, _role, _tags<br/>- __credentials : Credentials<br/>- _connection</td></tr>
+   <tr><td align="left" balign="left"><i>+ vendor, netmiko_device_type, commands</i><br/><i>+ parse_version(), parse_interfaces()</i><br/><i>+ parse_ospf_neighbors(), parse_arp(), parse_cpu()</i><br/><i># _apply_config(lines)</i><br/>+ connect(), disconnect(), __enter__/__exit__<br/>+ send_command(cmd)<br/>+ get_facts() : DeviceFacts  «template method»<br/>+ collect_version(), collect_interfaces()  «hook»<br/>+ backup_config(), push_config(lines, dry_run)<br/>+ rollback_commands(current, target)</td></tr></table>>];
+
+  MT [label=<<table border="1" cellborder="0" cellspacing="0" cellpadding="3" bgcolor="#f4f6fa" color="#4b5263">
+   <tr><td bgcolor="#dfe6f3"><b>MikroTikDevice</b></td></tr>
+   <tr><td align="left" balign="left">@register("mikrotik_routeros")<br/>+ collect_version()  (3 lệnh)<br/>+ collect_interfaces()  (2 lệnh)<br/>+ parse_ip_addresses()<br/>+ backup_config()  (bỏ dòng giờ)<br/>+ rollback_commands()  (/export)</td></tr></table>>];
+  VY [label=<<table border="1" cellborder="0" cellspacing="0" cellpadding="3" bgcolor="#f4f6fa" color="#4b5263">
+   <tr><td bgcolor="#dfe6f3"><b>VyOSDevice</b></td></tr>
+   <tr><td align="left" balign="left">@register("vyos")<br/>+ collect_version()  (3 lệnh)<br/>+ parse_uptime()<br/>+ _apply_config(): commit + save<br/>+ rollback_commands()  (set/delete)</td></tr></table>>];
+  CI [label=<<table border="1" cellborder="0" cellspacing="0" cellpadding="3" bgcolor="#f4f6fa" color="#4b5263">
+   <tr><td bgcolor="#dfe6f3"><b>CiscoIOSDevice</b></td></tr>
+   <tr><td align="left" balign="left">@register("cisco_ios")<br/>parse_* bằng TextFSM<br/>+ _apply_config(): save_config</td></tr></table>>];
+
+  FA [label=<<table border="1" cellborder="0" cellspacing="0" cellpadding="3" bgcolor="#f4f6fa" color="#4b5263">
+   <tr><td bgcolor="#dfe6f3"><b>DeviceFactory</b></td></tr>
+   <tr><td align="left" balign="left">- _registry : {device_type: class}</td></tr>
+   <tr><td align="left" balign="left">+ register(device_type)  «decorator»<br/>+ create(record, credentials)<br/>+ supported_types()</td></tr></table>>];
+  CR [label=<<table border="1" cellborder="0" cellspacing="0" cellpadding="3" bgcolor="#f4f6fa" color="#4b5263">
+   <tr><td bgcolor="#dfe6f3"><b>Credentials</b></td></tr>
+   <tr><td align="left" balign="left">- __username, __password, __secret</td></tr>
+   <tr><td align="left" balign="left">+ username, password  «read-only»<br/>+ from_env(prefix)<br/>+ __repr__() ẩn mật khẩu</td></tr></table>>];
+  DF [label=<<table border="1" cellborder="0" cellspacing="0" cellpadding="3" bgcolor="#fbf7e8" color="#4b5263">
+   <tr><td bgcolor="#f3ead0"><i>«dataclass»</i><br/><b>DeviceFacts</b></td></tr>
+   <tr><td align="left" balign="left">device, vendor, hostname, os_version, serial<br/>uptime_seconds, cpu_percent, config_hash<br/>interfaces : List[InterfaceStatus]<br/>ospf_neighbors : List[OspfNeighbor]<br/>arp_entries, collected_at</td></tr>
+   <tr><td align="left" balign="left">+ interfaces_down, to_dict(), from_dict()</td></tr></table>>];
+  INV [label=<<table border="1" cellborder="0" cellspacing="0" cellpadding="3" bgcolor="#f4f6fa" color="#4b5263">
+   <tr><td bgcolor="#dfe6f3"><b>Inventory</b></td></tr>
+   <tr><td align="left" balign="left">+ load(), save(), filter(group, role, tag)<br/>+ add(), update(), remove()<br/>+ build_devices() : List[NetworkDevice]</td></tr></table>>];
+
+  {MT VY CI} -> ND [arrowhead=empty, penwidth=1.2];
+  FA -> ND [arrowhead=vee, style=dashed, label=" tạo"];
+  ND -> CR [dir=back, arrowtail=diamond, label=" có 1"];
+  ND -> DF [arrowhead=vee, style=dashed, label=" trả về"];
+  INV -> FA [arrowhead=vee, style=dashed, label=" dùng"];
+  INV -> CR [arrowhead=vee, style=dashed];
+  {rank=same; MT VY CI}
+  {rank=same; FA CR DF}
+}

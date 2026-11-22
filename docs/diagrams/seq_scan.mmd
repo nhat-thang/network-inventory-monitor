@@ -1,0 +1,30 @@
+sequenceDiagram
+    autonumber
+    actor U as Người dùng
+    participant M as main.py
+    participant I as Inventory
+    participant C as FactsCollector
+    participant CM as ConnectionManager
+    participant D as NetworkDevice (mỗi router)
+    participant E as MonitoringEngine
+    participant R as HtmlReport
+    U->>M: python main.py scan
+    M->>I: load() + filter() + build_devices()
+    I-->>M: [MikroTikDevice, VyOSDevice, ...]
+    M->>C: collect(devices)
+    C->>CM: run(devices, get_facts)
+    par mỗi thiết bị một luồng
+        CM->>D: connect() (SSH)
+        D->>D: get_facts(): gửi lệnh show, parse_*()
+        D-->>CM: DeviceFacts hoặc lỗi (timeout, sai mật khẩu)
+    end
+    CM-->>C: List[TaskResult]
+    C-->>M: facts, failures
+    M->>E: evaluate(facts, failures)
+    E->>E: load_previous() snapshot lần trước
+    E->>E: chạy 5 luật AnomalyRule
+    E-->>M: List[Alert] (đã sắp theo mức độ)
+    M->>E: save_snapshot(facts)
+    M->>C: to_json(), to_csv()
+    M->>R: render(facts, failures, alerts)
+    R-->>U: output/report.html

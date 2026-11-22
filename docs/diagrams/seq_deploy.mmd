@@ -1,0 +1,30 @@
+sequenceDiagram
+    autonumber
+    actor U as Người dùng
+    participant M as main.py
+    participant P as ConfigPusher
+    participant B as BackupManager
+    participant D as NetworkDevice
+    U->>M: python main.py deploy-ospf [--dry-run]
+    M->>P: render(device, device_type, ospf_vars)
+    P-->>M: các dòng cấu hình (Jinja2)
+    alt --dry-run
+        M-->>U: in cấu hình, không kết nối thiết bị
+    else áp thật
+        M->>D: connect()
+        M->>P: deploy(device, lines)
+        P->>B: backup(device)
+        B->>D: backup_config()
+        B-->>P: file sao lưu có thời gian
+        P->>D: push_config(lines)
+        alt đẩy thành công
+            D-->>P: output
+            P-->>M: OK
+        else lỗi ConfigPushError
+            P->>B: rollback(device, file sao lưu)
+            B->>D: rollback_commands(hiện tại, bản lưu)
+            B->>D: push_config(lệnh khôi phục)
+            P-->>M: ConfigPushError "đã rollback"
+        end
+        M->>D: disconnect(), chuyển sang thiết bị tiếp theo
+    end
