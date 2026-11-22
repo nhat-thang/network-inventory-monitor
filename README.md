@@ -4,7 +4,7 @@ Hệ thống kiểm kê và giám sát trạng thái mạng đa nhà cung cấp,
 
 Đề tài số 3 – Bài tập lớn môn Lập trình hướng đối tượng, Học viện Công nghệ Bưu chính Viễn thông.
 
-> **Giảng viên đọc [HUONG_DAN.md](HUONG_DAN.md) trước.** File này hướng dẫn xem minh chứng, chạy thử toàn bộ chương trình bằng router giả lập (không cần lab), và đối chiếu từng yêu cầu của đề với mã nguồn.
+> **Giảng viên đọc [lab/README.md](lab/README.md) trước.** File này hướng dẫn xem minh chứng, chạy thử toàn bộ chương trình bằng router giả lập (không cần lab), đối chiếu từng yêu cầu của đề với mã nguồn, và dựng lại lab GNS3.
 
 ## Chức năng
 
