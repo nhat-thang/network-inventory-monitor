@@ -24,6 +24,7 @@ def facts(device="R1", cpu=5.0, uptime=1000, eth2_up=True, ospf_state="Full", co
         interfaces=[
             InterfaceStatus("ether1", "192.168.100.11/24", True, True),
             InterfaceStatus("ether2", "10.0.12.1/30", True, eth2_up),
+            InterfaceStatus("ether7", None, True, False),   # unused port: no alert
             InterfaceStatus("ether8", None, False, False),  # disabled: never an alert
         ],
         ospf_neighbors=[OspfNeighbor("2.2.2.2", "10.0.12.2", "ether2", ospf_state)] if ospf_state else [],
@@ -37,7 +38,7 @@ def messages(alerts):
 def test_interface_down_warning_then_critical_when_it_was_up():
     rule = InterfaceDownRule()
     assert messages(rule.evaluate(facts(eth2_up=False), None)) == [
-        ("warning", "Interface ether2 is enabled but down")]
+        ("warning", "Interface ether2 (10.0.12.1/30) is enabled but down")]
     assert messages(rule.evaluate(facts(eth2_up=False), facts())) == [
         ("critical", "Interface ether2 went down")]
     assert rule.evaluate(facts(), facts()) == []
@@ -112,4 +113,4 @@ def test_facts_round_trip_and_exports(tmp_path):
     FactsCollector.to_csv([original], tmp_path / "facts.csv")
     with (tmp_path / "facts.csv").open(encoding="utf-8-sig") as handle:
         row = next(csv.DictReader(handle))
-    assert (row["device"], row["interfaces_total"], row["interfaces_down"]) == ("R1", "3", "0")
+    assert (row["device"], row["interfaces_total"], row["interfaces_down"]) == ("R1", "4", "1")

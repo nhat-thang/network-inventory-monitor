@@ -33,7 +33,8 @@ class InterfaceDownRule(AnomalyRule):
     """Interface administratively up but operationally down.
 
     ``critical`` if the interface was up in the previous scan (it just went
-    down), ``warning`` otherwise.
+    down), ``warning`` if it has an IP address but no link. An unused port
+    (no IP, never seen up, e.g. ether4-ether8 on the lab MikroTiks) is ignored.
     """
 
     @property
@@ -48,8 +49,9 @@ class InterfaceDownRule(AnomalyRule):
         for intf in current.interfaces_down:
             if intf.name in was_up:
                 alerts.append(self._alert(current, "critical", f"Interface {intf.name} went down"))
-            else:
-                alerts.append(self._alert(current, "warning", f"Interface {intf.name} is enabled but down"))
+            elif intf.ip_address:
+                alerts.append(self._alert(
+                    current, "warning", f"Interface {intf.name} ({intf.ip_address}) is enabled but down"))
         return alerts
 
 
