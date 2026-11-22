@@ -24,8 +24,12 @@ function followTask(taskId) {
       if (!tr) { tr = document.createElement('tr'); log.appendChild(tr); rows[e.device] = tr; }
       var badge = e.ok ? '<span class="badge good">XONG</span>' : '<span class="badge critical">LỖI</span>';
       tr.innerHTML = '<td><b>' + e.device + '</b></td><td>' + badge + '</td><td class="nowrap">' + e.time +
-                     '</td><td><pre></pre></td>';
-      tr.querySelector('pre').textContent = e.detail || '';
+                     '</td><td></td>';
+      if (e.detail) {
+        var pre = document.createElement('pre');
+        pre.textContent = e.detail;
+        tr.lastChild.appendChild(pre);
+      }
     } else if (e.type === 'done') {
       source.close();
       status.className = 'flash ' + (e.ok ? 'info' : '');

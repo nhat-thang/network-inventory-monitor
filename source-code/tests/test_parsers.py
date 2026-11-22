@@ -251,3 +251,21 @@ def test_cisco_routes_lldp_memory():
     assert lldp == [LldpNeighbor("Gi0/1", "R2", "Gi0/1", None)]
     assert cisco.parse_memory("Processor Pool Total:  268435456 Used:  67108864 Free: 201326592") == {
         "total_mb": 256.0, "used_percent": 25.0}
+
+
+def test_vyos_lldp_detail_format():
+    from devices import VyOSDevice
+    from core.credentials import Credentials
+
+    dev = VyOSDevice("VY1", "192.0.2.1", Credentials("u", "p"))
+    text = (Path(__file__).parent / "samples" / "vyos" / "show_lldp_neighbors_detail.txt").read_text()
+    n = dev.parse_lldp(text)
+    assert [(x.local_interface, x.neighbor, x.neighbor_port) for x in n] == [
+        ("eth1", "R1-MikroTik", "ether3"), ("eth2", "VY2-VyOS", "0c:a3:25:32:00:02")]
+    assert n[0].platform.startswith("MikroTik RouterOS")
+    table = """Device ID                 Local     Proto  Cap   Platform             Port ID
+---------                 -----     -----  ---   --------             -------
+R1-MikroTik               eth1      LLDP   R     MikroTik RouterOS    ether3
+"""
+    t = dev.parse_lldp(table)
+    assert (t[0].neighbor, t[0].local_interface, t[0].neighbor_port) == ("R1-MikroTik", "eth1", "ether3")

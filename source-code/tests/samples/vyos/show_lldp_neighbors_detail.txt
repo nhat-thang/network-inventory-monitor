@@ -1,0 +1,25 @@
+-------------------------------------------------------------------------------
+LLDP neighbors:
+-------------------------------------------------------------------------------
+Interface:    eth1, via: LLDP, RID: 1, Time: 0 day, 00:05:12
+  Chassis:
+    ChassisID:    mac 0c:28:1f:aa:00:02
+    SysName:      R1-MikroTik
+    SysDescr:     MikroTik RouterOS 7.24.6 (long-term) CHR
+    MgmtIP:       10.0.13.1
+    Capability:   Bridge, on
+    Capability:   Router, on
+  Port:
+    PortID:       ifname ether3
+    PortDescr:    ether3
+    TTL:          120
+-------------------------------------------------------------------------------
+Interface:    eth2, via: LLDP, RID: 2, Time: 0 day, 00:05:10
+  Chassis:
+    ChassisID:    mac 0c:a3:25:32:00:00
+    SysName:      VY2-VyOS
+    SysDescr:     VyOS 2026.11.18-0016-rolling
+  Port:
+    PortID:       mac 0c:a3:25:32:00:02
+    PortDescr:    eth2
+-------------------------------------------------------------------------------
