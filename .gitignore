@@ -28,3 +28,6 @@ project-files/
 .idea/
 .DS_Store
 Thumbs.db
+
+# GNS3 portable project export (large, published as a GitHub Release asset)
+*.gns3project

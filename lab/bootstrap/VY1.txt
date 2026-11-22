@@ -1,10 +1,18 @@
-# VY1 - VyOS - minimal bootstrap (management + SSH only)
-# First login: vyos / vyos. Replace <PASSWORD> with the lab password.
+# VY1 - VyOS 2026.11.18-0016-rolling - minimal bootstrap (management + SSH only)
+#
+# Step 1 - install to disk (only once, the node first boots from the ISO):
+#   login vyos / vyos, run: install image
+#   answer: y, Enter, <PASSWORD>, <PASSWORD>, S (serial console), Enter, y, y, Enter
+#   then: reboot
+#
+# Step 2 - login vyos / <PASSWORD>, paste ONE line at a time:
 configure
-set system host-name VY1
+set system host-name VY1-VyOS
 set interfaces ethernet eth0 address 192.168.100.21/24
-set service ssh
+set interfaces ethernet eth0 description Management
+set service ssh port 22
 set system login user admin authentication plaintext-password <PASSWORD>
 commit
 save
 exit
+show interfaces
