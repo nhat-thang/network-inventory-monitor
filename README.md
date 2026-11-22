@@ -4,6 +4,8 @@ Hệ thống kiểm kê và giám sát trạng thái mạng đa nhà cung cấp,
 
 Đề tài số 3 – Bài tập lớn môn Lập trình hướng đối tượng, Học viện Công nghệ Bưu chính Viễn thông.
 
+> **Giảng viên đọc [HUONG_DAN.md](HUONG_DAN.md) trước.** File này hướng dẫn xem minh chứng, chạy thử toàn bộ chương trình bằng router giả lập (không cần lab), và đối chiếu từng yêu cầu của đề với mã nguồn.
+
 ## Chức năng
 
 1. **Inventory:** đọc danh sách thiết bị từ `inventory.yaml`, lọc theo nhóm, vai trò hoặc tag.
@@ -68,6 +70,8 @@ python main.py deploy baseline --dry-run      # xem trước template baseline (
 python main.py deploy ospf --tag vyos         # áp template OSPF cho các thiết bị có tag vyos
 python main.py web                            # mở giao diện web tại http://127.0.0.1:5000
 ```
+
+Thêm `--demo` trước tên lệnh (ví dụ `python main.py --demo web`) để chạy với router giả lập, không cần lab; kết quả ghi vào `output_demo/`.
 
 `deploy-ospf` vẫn dùng được và tương đương `deploy ospf`.
 

@@ -8,7 +8,7 @@ import pytest
 from core.scheduler import PeriodicRunner
 from reporting.history import HistoryLog
 from services import NetworkService
-from tests.fakes import FakeMikroTik, FakeVyOS, use_fake_devices
+from devices.simulated import FakeMikroTik, FakeVyOS, use_fake_devices
 
 ROOT = Path(__file__).resolve().parents[1]
 

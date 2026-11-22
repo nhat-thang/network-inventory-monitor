@@ -19,14 +19,19 @@ from services import NetworkService
 
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = BASE_DIR / "output"
+DEMO_OUTPUT_DIR = BASE_DIR / "output_demo"
 
 logger = logging.getLogger("netmon")
+
+
+def _output_dir(args: argparse.Namespace) -> Path:
+    return DEMO_OUTPUT_DIR if getattr(args, "demo", False) else OUTPUT_DIR
 
 
 def _service(args: argparse.Namespace) -> NetworkService:
     return NetworkService(
         BASE_DIR,
-        OUTPUT_DIR,
+        _output_dir(args),
         workers=getattr(args, "workers", 8),
         cpu_threshold=getattr(args, "cpu_threshold", 80.0),
         memory_threshold=getattr(args, "memory_threshold", 90.0),
@@ -155,13 +160,17 @@ def cmd_deploy_ospf(args: argparse.Namespace) -> None:
 def cmd_web(args: argparse.Namespace) -> None:
     from web.app import create_app
 
-    print(f"Web interface: http://{args.host}:{args.port}  (Ctrl+C to stop)")
-    create_app(BASE_DIR, OUTPUT_DIR).run(host=args.host, port=args.port, threaded=True)
+    mode = "  [DEMO: simulated routers, no lab needed]" if args.demo else ""
+    print(f"Web interface: http://{args.host}:{args.port}{mode}  (Ctrl+C to stop)")
+    create_app(BASE_DIR, _output_dir(args), demo=args.demo).run(host=args.host, port=args.port, threaded=True)
 
 
 # ---------------------------------------------------------------- parser
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="netmon", description="Network inventory & status monitoring")
+    parser.add_argument("--demo", action="store_true",
+                        help="use simulated routers that replay real lab output (no GNS3 needed); "
+                             "results go to output_demo/")
     sub = parser.add_subparsers(dest="command", required=True)
 
     def add_filters(p: argparse.ArgumentParser) -> None:
@@ -244,7 +253,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: Optional[List[str]] = None) -> int:
     args = build_parser().parse_args(argv)
-    AppLogger(OUTPUT_DIR / "logs")
+    if args.demo:
+        from devices.simulated import use_simulated_devices
+
+        use_simulated_devices(DEMO_OUTPUT_DIR / "simulated_config")
+    AppLogger(_output_dir(args) / "logs")
     try:
         args.func(args)
     except NetworkAutomationError as exc:

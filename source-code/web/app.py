@@ -17,13 +17,14 @@ from web.tasks import TaskManager
 ACTIONS = {"scan": "Quét thiết bị", "backup": "Sao lưu cấu hình", "deploy": "Áp cấu hình", "rollback": "Khôi phục"}
 
 
-def create_app(base_dir: Path, output_dir: Path) -> Flask:
+def create_app(base_dir: Path, output_dir: Path, demo: bool = False) -> Flask:
     """Application factory."""
     app = Flask(__name__)
     app.secret_key = "netmon-local-ui"
     AppLogger(Path(output_dir) / "logs")
     service = NetworkService(base_dir, output_dir, source="web")
     tasks = TaskManager()
+    app.jinja_env.globals["demo_mode"] = demo
 
     @app.template_filter("uptime")
     def _uptime(seconds):

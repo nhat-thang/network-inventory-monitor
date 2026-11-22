@@ -146,8 +146,12 @@ class NetworkService:
         FactsCollector.to_json(facts, self._out / "facts.json")
         FactsCollector.to_csv(facts, self._out / "facts.csv")
         stamp = datetime.now()
-        report = MarkdownReport().render(
-            facts, failures, alerts, self.reports_dir / f"report_{stamp:%Y%m%d-%H%M%S}.md", stamp)
+        path = self.reports_dir / f"report_{stamp:%Y%m%d-%H%M%S}.md"
+        n = 1
+        while path.exists():  # two scans in the same second
+            path = self.reports_dir / f"report_{stamp:%Y%m%d-%H%M%S}-{n}.md"
+            n += 1
+        report = MarkdownReport().render(facts, failures, alerts, path, stamp)
         self._save_last_scan(facts, failures, alerts, report, stamp)
         self._history.record("scan", [r["name"] for r in records], len(facts), len(failures),
                              f"{len(alerts)} cảnh báo, báo cáo {report.name}", self._source)
