@@ -17,7 +17,7 @@ from core.exceptions import (
     DeviceConnectionError,
     DeviceTimeoutError,
 )
-from core.models import DeviceFacts, InterfaceStatus, OspfNeighbor
+from core.models import DeviceFacts, InterfaceStatus, LldpNeighbor, OspfNeighbor, RouteEntry
 from devices.parsing import clean_output
 
 
@@ -98,7 +98,7 @@ class NetworkDevice(ABC):
         """Vendor CLI command for each fact.
 
         Required keys: ``version``, ``interfaces``, ``ospf_neighbors``,
-        ``arp``, ``cpu``, ``running_config``.
+        ``routes``, ``lldp``, ``arp``, ``cpu``, ``memory``, ``running_config``.
         """
 
     @abstractmethod
@@ -112,6 +112,18 @@ class NetworkDevice(ABC):
     @abstractmethod
     def parse_ospf_neighbors(self, output: str) -> List[OspfNeighbor]:
         """Return the OSPF adjacencies."""
+
+    @abstractmethod
+    def parse_routes(self, output: str) -> List[RouteEntry]:
+        """Return the routing table (IPv4)."""
+
+    @abstractmethod
+    def parse_lldp(self, output: str) -> List[LldpNeighbor]:
+        """Return the directly connected neighbors (LLDP/CDP)."""
+
+    @abstractmethod
+    def parse_memory(self, output: str) -> Dict[str, Optional[float]]:
+        """Return ``total_mb`` and ``used_percent``."""
 
     @abstractmethod
     def parse_arp(self, output: str) -> List[Dict[str, Any]]:
@@ -182,7 +194,11 @@ class NetworkDevice(ABC):
 
     # ------------------------------------------------------ template methods
     def get_facts(self) -> DeviceFacts:
-        """Collect and normalize facts. Same steps for every vendor (template method)."""
+        """Collect and normalize facts. Same steps for every vendor (template method).
+
+        Order: version, interfaces, OSPF neighbors, routing table, LLDP
+        neighbors, ARP, CPU, memory, then the hash of the running config.
+        """
         cmd = self.commands
         facts = DeviceFacts(device=self._name, vendor=self.vendor)
         version = self.collect_version()
@@ -192,8 +208,13 @@ class NetworkDevice(ABC):
         facts.uptime_seconds = version.get("uptime_seconds")
         facts.interfaces = self.collect_interfaces()
         facts.ospf_neighbors = self.parse_ospf_neighbors(self.send_command(cmd["ospf_neighbors"]))
+        facts.routes = self.parse_routes(self.send_command(cmd["routes"]))
+        facts.lldp_neighbors = self.parse_lldp(self.send_command(cmd["lldp"]))
         facts.arp_entries = self.parse_arp(self.send_command(cmd["arp"]))
         facts.cpu_percent = self.parse_cpu(self.send_command(cmd["cpu"]))
+        memory = self.parse_memory(self.send_command(cmd["memory"]))
+        facts.memory_total_mb = memory.get("total_mb")
+        facts.memory_percent = memory.get("used_percent")
         facts.config_hash = hashlib.sha256(self.backup_config().encode("utf-8")).hexdigest()
         return facts
 

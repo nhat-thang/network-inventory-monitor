@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>So sánh cấu hình {{ device }}</h1>
+<p class="mono">{{ old }} → {{ new }}</p>
+{% if diff %}
+<pre>{% for line in diff.splitlines() %}<span class="{{ 'diff-add' if line.startswith('+') and not line.startswith('+++') else ('diff-del' if line.startswith('-') and not line.startswith('---') else ('diff-hunk' if line.startswith('@@') else '')) }}">{{ line }}</span>
+{% endfor %}</pre>
+{% else %}<p class="muted">Hai bản giống nhau.</p>{% endif %}
+<p><a href="{{ url_for('backups') }}">Quay lại</a></p>
+{% endblock %}

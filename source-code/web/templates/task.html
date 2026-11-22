@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Tác vụ #{{ task.id }}: {{ task.action }}</h1>
+<p class="muted">Bắt đầu lúc {{ task.started.strftime("%H:%M:%S") }} trên {{ task.devices | length }} thiết bị.</p>
+<div id="task-status" class="flash info">Đang chạy...</div>
+<table>
+  <thead><tr><th>Thiết bị</th><th>Trạng thái</th><th>Thời gian</th><th>Kết quả</th></tr></thead>
+  <tbody id="progress"></tbody>
+</table>
+<div id="alerts" style="display:none">
+  <h2>Cảnh báo</h2>
+  <table><thead><tr><th>Mức độ</th><th>Thiết bị</th><th>Nội dung</th></tr></thead><tbody></tbody></table>
+</div>
+<p><a href="{{ url_for('devices') }}">Quay lại danh sách thiết bị</a></p>
+<script>followTask({{ task.id }});</script>
+{% endblock %}

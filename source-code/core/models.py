@@ -32,6 +32,26 @@ class OspfNeighbor:
 
 
 @dataclass
+class RouteEntry:
+    """One route in the routing table."""
+
+    prefix: str
+    protocol: str  # connected | local | static | ospf | bgp | rip | kernel | dhcp | other
+    next_hop: Optional[str]
+    interface: Optional[str]
+
+
+@dataclass
+class LldpNeighbor:
+    """A directly connected neighbor discovered by LLDP (or CDP/MNDP)."""
+
+    local_interface: str
+    neighbor: str
+    neighbor_port: Optional[str]
+    platform: Optional[str]
+
+
+@dataclass
 class DeviceFacts:
     """Normalized snapshot of a device, identical in shape for every vendor."""
 
@@ -42,8 +62,12 @@ class DeviceFacts:
     serial: Optional[str] = None
     uptime_seconds: Optional[int] = None
     cpu_percent: Optional[float] = None
+    memory_total_mb: Optional[float] = None
+    memory_percent: Optional[float] = None
     interfaces: List[InterfaceStatus] = field(default_factory=list)
     ospf_neighbors: List[OspfNeighbor] = field(default_factory=list)
+    routes: List[RouteEntry] = field(default_factory=list)
+    lldp_neighbors: List[LldpNeighbor] = field(default_factory=list)
     arp_entries: List[Dict[str, Any]] = field(default_factory=list)
     config_hash: Optional[str] = None
     collected_at: datetime = field(default_factory=datetime.now)
@@ -65,6 +89,8 @@ class DeviceFacts:
         data = dict(data)
         data["interfaces"] = [InterfaceStatus(**i) for i in data.get("interfaces", [])]
         data["ospf_neighbors"] = [OspfNeighbor(**n) for n in data.get("ospf_neighbors", [])]
+        data["routes"] = [RouteEntry(**r) for r in data.get("routes", [])]
+        data["lldp_neighbors"] = [LldpNeighbor(**n) for n in data.get("lldp_neighbors", [])]
         if isinstance(data.get("collected_at"), str):
             data["collected_at"] = datetime.fromisoformat(data["collected_at"])
         known = {f for f in cls.__dataclass_fields__}

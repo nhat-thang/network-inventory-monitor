@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Tổng quan</h1>
+<div class="summary">
+  <div class="box">
+    <div class="num">{{ d.devices }}</div><div class="lbl">Thiết bị trong inventory</div></div>
+  <div class="box {{ 'crit' if d.offline else 'ok' }}">
+    <div class="num">{% if d.online is none %}-{% else %}{{ d.online }}/{{ d.online + d.offline }}{% endif %}</div>
+    <div class="lbl">Trực tuyến ở lần quét gần nhất</div></div>
+  <div class="box {{ 'crit' if d.alerts else 'ok' }}">
+    <div class="num">{{ d.alerts | length }}</div><div class="lbl">Cảnh báo ở lần quét gần nhất</div></div>
+  <div class="box info">
+    <div class="num">{{ d.backup_count }}</div><div class="lbl">Bản sao lưu ({{ d.backup_devices }} thiết bị)</div></div>
+  <div class="box">
+    <div class="num">{{ d.reports }}</div><div class="lbl">Báo cáo Excel</div></div>
+</div>
+<p class="muted">
+  {% if d.last_scan %}Lần quét gần nhất: {{ d.last_scan.time.replace("T", " ") }}.
+  {% else %}Chưa có lần quét nào. Vào trang <a href="{{ url_for('devices') }}">Thiết bị</a> để quét.{% endif %}
+</p>
+
+<h2>Cảnh báo ở lần quét gần nhất</h2>
+{% if d.alerts %}
+<table>
+  <thead><tr><th>Mức độ</th><th>Thiết bị</th><th>Luật</th><th>Nội dung</th></tr></thead>
+  <tbody>
+  {% for a in d.alerts %}
+  <tr><td><span class="badge {{ a.severity }}">{{ sev[a.severity] }}</span></td>
+      <td><a href="{{ url_for('device', name=a.device) }}"><b>{{ a.device }}</b></a></td>
+      <td class="mono">{{ a.rule }}</td><td>{{ a.message }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}<p class="muted">Không có cảnh báo.</p>{% endif %}
+
+<h2>Lịch sử thao tác gần đây</h2>
+{% include "_history_table.html" with context %}
+{% endblock %}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>{% block title %}Giám sát mạng{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</head>
+<body>
+{% set sev = {"good": "BÌNH THƯỜNG", "warning": "CẢNH BÁO", "critical": "NGHIÊM TRỌNG", "info": "THÔNG TIN"} %}
+<div class="topbar">
+  <div class="brand">Kiểm kê và giám sát mạng</div>
+  <nav>
+    {% for ep, label in [("dashboard", "Tổng quan"), ("devices", "Thiết bị"), ("backups", "Sao lưu"),
+                         ("reports", "Báo cáo"), ("history", "Lịch sử")] %}
+    <a href="{{ url_for(ep) }}" class="{{ 'active' if request.endpoint == ep else '' }}">{{ label }}</a>
+    {% endfor %}
+  </nav>
+</div>
+<div class="container">
+  {% for category, message in get_flashed_messages(with_categories=true) %}
+  <div class="flash {{ category }}">{{ message }}</div>
+  {% endfor %}
+  {% block content %}{% endblock %}
+</div>
+</body>
+</html>
