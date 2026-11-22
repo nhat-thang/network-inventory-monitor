@@ -1,10 +1,9 @@
 """HTML dashboard report: device status overview and alert list.
 
-The page is one self-contained file (inline CSS, no JavaScript, no internet
-needed), so it can be opened directly from disk or attached to the report.
+The page is one self-contained file (inline CSS, no JavaScript), so it can be
+opened directly from disk.
 """
 
-import getpass
 from collections import Counter
 from datetime import datetime
 from pathlib import Path
@@ -52,6 +51,7 @@ class HtmlReport:
         facts: List[DeviceFacts],
         failures: List[TaskResult],
         alerts: List[Alert],
+        generated_at: Optional[datetime] = None,
     ) -> Dict[str, Any]:
         """Numbers and rows shown on the page (separate from rendering so it can be tested)."""
         severity = Counter(a.severity for a in alerts)
@@ -75,8 +75,7 @@ class HtmlReport:
         devices.sort(key=lambda d: d["facts"].device if d["facts"] else d["name"])
         total = len(facts) + len(failures)
         return {
-            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "operator": _operator(),
+            "generated_at": (generated_at or datetime.now()).strftime("%Y-%m-%d %H:%M:%S"),
             "total": total,
             "online": len(facts),
             "offline": len(failures),
@@ -96,6 +95,7 @@ class HtmlReport:
         failures: List[TaskResult],
         alerts: List[Alert],
         output_path: Path,
+        generated_at: Optional[datetime] = None,
     ) -> Path:
         """Write the report and return its path.
 
@@ -103,16 +103,10 @@ class HtmlReport:
         (name, vendor, version, uptime, CPU), and the alert list sorted by severity.
         """
         html = self._env.get_template(self._template_name).render(
-            **self.build_context(facts, failures, alerts)
+            **self.build_context(facts, failures, alerts, generated_at)
         )
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(html, encoding="utf-8")
         return output_path
 
-
-def _operator() -> str:
-    try:
-        return getpass.getuser()
-    except Exception:  # noqa: BLE001
-        return "unknown"

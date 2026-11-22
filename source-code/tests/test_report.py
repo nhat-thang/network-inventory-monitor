@@ -43,7 +43,7 @@ def test_context_counts_and_device_status():
 def test_render_writes_self_contained_escaped_html(tmp_path):
     out = HtmlReport().render(_facts(), FAILURES, ALERTS, tmp_path / "sub" / "report.html")
     html = out.read_text(encoding="utf-8")
-    for text in ("R1-MikroTik", "1h 2m", "Interface ether2 went down", "Mất kết nối", "00:50:56:c0:00:03"):
+    for text in ("R1-MikroTik", "1h 2m", "Interface ether2 went down", "MẤT KẾT NỐI", "00:50:56:c0:00:03"):
         assert text in html
     assert "<script>x</script>" not in html and "&lt;script&gt;" in html
     assert "http://" not in html and "https://" not in html  # no external resources
