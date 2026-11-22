@@ -1,0 +1,231 @@
+[
+  {
+    "device": "R1",
+    "vendor": "MikroTik RouterOS",
+    "hostname": "R1-MikroTik",
+    "os_version": "RouterOS 7.24.6 (long-term)",
+    "serial": "pNwYzAOYZKB",
+    "uptime_seconds": 853,
+    "cpu_percent": 0.0,
+    "interfaces": [
+      {
+        "name": "ether1",
+        "ip_address": "192.168.100.11/24",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "ether2",
+        "ip_address": "10.0.12.1/30",
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "ether3",
+        "ip_address": "10.0.13.1/30",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "ether4",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "ether5",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "ether6",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "ether7",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "ether8",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "lo",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": true
+      }
+    ],
+    "ospf_neighbors": [
+      {
+        "neighbor_id": "3.3.3.3",
+        "address": "10.0.13.2",
+        "interface": "ether3",
+        "state": "Full"
+      }
+    ],
+    "arp_entries": [
+      {
+        "ip": "192.168.100.1",
+        "mac": "00:50:56:c0:00:03",
+        "interface": "ether1"
+      },
+      {
+        "ip": "10.0.13.2",
+        "mac": "0c:34:e8:75:00:01",
+        "interface": "ether3"
+      }
+    ],
+    "config_hash": "2aad9efb0dc5506c938437641238e1f23d6faef63d550ad7e140c5cd300fdbe5",
+    "collected_at": "2026-11-22T08:43:09"
+  },
+  {
+    "device": "R2",
+    "vendor": "MikroTik RouterOS",
+    "hostname": "R2-MikroTik",
+    "os_version": "RouterOS 7.24.6 (long-term)",
+    "serial": "3WWC6wGvfYG",
+    "uptime_seconds": 849,
+    "cpu_percent": 0.0,
+    "interfaces": [
+      {
+        "name": "ether1",
+        "ip_address": "192.168.100.12/24",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "ether2",
+        "ip_address": "10.0.12.2/30",
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "ether3",
+        "ip_address": "10.0.24.1/30",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "ether4",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "ether5",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "ether6",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "ether7",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "ether8",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": false
+      },
+      {
+        "name": "lo",
+        "ip_address": null,
+        "admin_up": true,
+        "oper_up": true
+      }
+    ],
+    "ospf_neighbors": [],
+    "arp_entries": [
+      {
+        "ip": "192.168.100.1",
+        "mac": "00:50:56:c0:00:03",
+        "interface": "ether1"
+      },
+      {
+        "ip": "10.0.24.2",
+        "mac": "0c:a3:25:32:00:01",
+        "interface": "ether3"
+      }
+    ],
+    "config_hash": "d8447fb1bd4df316ba966eab3a75e978d0bd162efcbdf3daace08362b7eaecbb",
+    "collected_at": "2026-11-22T08:43:09"
+  },
+  {
+    "device": "VY1",
+    "vendor": "VyOS",
+    "hostname": "VY1-VyOS",
+    "os_version": "VyOS 2026.11.18-0016-rolling",
+    "serial": "fa34e875-1e73-421b-ac99-9afa6eac45a5",
+    "uptime_seconds": 827,
+    "cpu_percent": 0.0,
+    "interfaces": [
+      {
+        "name": "eth0",
+        "ip_address": "192.168.100.21/24",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "eth1",
+        "ip_address": "10.0.13.2/30",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "eth2",
+        "ip_address": "10.0.34.1/30",
+        "admin_up": true,
+        "oper_up": true
+      },
+      {
+        "name": "lo",
+        "ip_address": "127.0.0.1/8",
+        "admin_up": true,
+        "oper_up": true
+      }
+    ],
+    "ospf_neighbors": [
+      {
+        "neighbor_id": "1.1.1.1",
+        "address": "10.0.13.1",
+        "interface": "eth1",
+        "state": "Full"
+      }
+    ],
+    "arp_entries": [
+      {
+        "ip": "10.0.34.2",
+        "mac": "0c:a3:25:32:00:02",
+        "interface": "eth2"
+      },
+      {
+        "ip": "192.168.100.1",
+        "mac": "00:50:56:c0:00:03",
+        "interface": "eth0"
+      },
+      {
+        "ip": "10.0.13.1",
+        "mac": "0c:a3:0f:fd:00:02",
+        "interface": "eth1"
+      }
+    ],
+    "config_hash": "a73291ce2329ab23d0d5a7f71741d94a157d7b09831c5a430acf27ce3bd1a913",
+    "collected_at": "2026-11-22T08:43:12"
+  }
+]
