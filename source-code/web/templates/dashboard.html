@@ -11,6 +11,9 @@
     <div class="num">{{ d.alerts | length }}</div><div class="lbl">Cảnh báo ở lần quét gần nhất</div></div>
   <div class="box info">
     <div class="num">{{ d.backup_count }}</div><div class="lbl">Bản sao lưu ({{ d.backup_devices }} thiết bị)</div></div>
+  <div class="box {{ 'warn' if d.compliance_failed else ('ok' if d.compliance is not none else '') }}">
+    <div class="num">{% if d.compliance is none %}-{% else %}{{ "%.0f" % d.compliance }}%{% endif %}</div>
+    <div class="lbl">Tỷ lệ tuân thủ cấu hình{% if d.compliance_failed %} ({{ d.compliance_failed }} mục không đạt){% endif %}</div></div>
   <div class="box">
     <div class="num">{{ d.reports }}</div><div class="lbl">Báo cáo (.md)</div></div>
 </div>

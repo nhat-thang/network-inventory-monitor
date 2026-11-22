@@ -35,10 +35,11 @@ def test_scan_writes_markdown_json_snapshot_and_history(service):
     assert [f.device for f in result.facts] == ["R1", "R2", "VY1", "VY2"] and not result.failures
     r1 = result.facts[0]
     assert len(r1.routes) == 5 and len(r1.lldp_neighbors) == 2 and r1.memory_percent == 54.5
+    assert r1.compliance_percent == 40.0 and service.dashboard()["compliance"] is not None
 
     text = result.report_path.read_text(encoding="utf-8")
     assert result.report_path.suffix == ".md" and text.startswith("# Báo cáo kiểm kê")
-    assert "| Trực tuyến | 4 |" in text and text.count("### ") == 4
+    assert "| Trực tuyến | 4 |" in text and "## 4. Tuân thủ cấu hình" in text and text.count("### ") == 4
     assert "| 10.0.24.0/30 | ospf | 10.0.12.2 | ether2 |" in text
     assert "| ether1 | R2-MikroTik | ether1 | MikroTik |" in text
     assert (service.output_dir / "facts.json").exists() and service.last_scan()["online"] == ["R1", "R2", "VY1", "VY2"]
@@ -51,7 +52,7 @@ def test_scan_reports_offline_device(service):
     assert [f.device for f in result.failures] == ["VY2"]
     assert any(a.rule == "device_offline" and a.device == "VY2" for a in result.alerts)
     text = result.report_path.read_text(encoding="utf-8")
-    assert "| VY2 | **Mất kết nối** |" in text and "## 5. Thiết bị không kết nối được" in text
+    assert "| VY2 | **Mất kết nối** |" in text and "## 6. Thiết bị không kết nối được" in text
 
 
 def test_backup_deploy_and_select(service):

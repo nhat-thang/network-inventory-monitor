@@ -52,6 +52,16 @@ class LldpNeighbor:
 
 
 @dataclass
+class ComplianceResult:
+    """Outcome of one compliance check on one device."""
+
+    check: str
+    description: str
+    passed: bool
+    detail: str = ""
+
+
+@dataclass
 class DeviceFacts:
     """Normalized snapshot of a device, identical in shape for every vendor."""
 
@@ -70,12 +80,20 @@ class DeviceFacts:
     lldp_neighbors: List[LldpNeighbor] = field(default_factory=list)
     arp_entries: List[Dict[str, Any]] = field(default_factory=list)
     config_hash: Optional[str] = None
+    compliance: List[ComplianceResult] = field(default_factory=list)
     collected_at: datetime = field(default_factory=datetime.now)
 
     @property
     def interfaces_down(self) -> List[InterfaceStatus]:
         """Interfaces enabled by the admin but without link."""
         return [i for i in self.interfaces if i.admin_up and not i.oper_up]
+
+    @property
+    def compliance_percent(self) -> Optional[float]:
+        """Share of compliance checks passed (None if none were run)."""
+        if not self.compliance:
+            return None
+        return round(100 * sum(c.passed for c in self.compliance) / len(self.compliance), 1)
 
     def to_dict(self) -> Dict[str, Any]:
         """JSON-friendly dict (datetime as ISO string)."""
@@ -91,6 +109,7 @@ class DeviceFacts:
         data["ospf_neighbors"] = [OspfNeighbor(**n) for n in data.get("ospf_neighbors", [])]
         data["routes"] = [RouteEntry(**r) for r in data.get("routes", [])]
         data["lldp_neighbors"] = [LldpNeighbor(**n) for n in data.get("lldp_neighbors", [])]
+        data["compliance"] = [ComplianceResult(**c) for c in data.get("compliance", [])]
         if isinstance(data.get("collected_at"), str):
             data["collected_at"] = datetime.fromisoformat(data["collected_at"])
         known = {f for f in cls.__dataclass_fields__}

@@ -215,8 +215,14 @@ class NetworkDevice(ABC):
         memory = self.parse_memory(self.send_command(cmd["memory"]))
         facts.memory_total_mb = memory.get("total_mb")
         facts.memory_percent = memory.get("used_percent")
-        facts.config_hash = hashlib.sha256(self.backup_config().encode("utf-8")).hexdigest()
+        self._last_config = self.backup_config()
+        facts.config_hash = hashlib.sha256(self._last_config.encode("utf-8")).hexdigest()
         return facts
+
+    @property
+    def last_config(self) -> str:
+        """Running config read by the last ``get_facts()`` call ("" before any)."""
+        return getattr(self, "_last_config", "")
 
     # ------------------------------------------------------------ hook methods
     # Most vendors answer each question with one command. A vendor that needs

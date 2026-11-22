@@ -37,6 +37,13 @@
     </tbody></table>{% else %}<p class="muted">Không có.</p>{% endif %}
   </div>
   <div>
+    <h2>Tuân thủ cấu hình{% if f.compliance_percent is not none %} ({{ "%.0f" % f.compliance_percent }}%){% endif %}</h2>
+    {% if f.compliance %}
+    <table><thead><tr><th>Tiêu chí</th><th>Kết quả</th><th>Ghi chú</th></tr></thead><tbody>
+    {% for c in f.compliance %}<tr><td>{{ c.description }}</td>
+      <td>{% if c.passed %}<span class="badge good">ĐẠT</span>{% else %}<span class="badge warning">KHÔNG ĐẠT</span>{% endif %}</td>
+      <td>{{ c.detail }}</td></tr>{% endfor %}
+    </tbody></table>{% else %}<p class="muted">Chưa kiểm tra.</p>{% endif %}
     <h2>Bảng định tuyến</h2>
     <table><thead><tr><th>Prefix</th><th>Giao thức</th><th>Next hop</th><th>Cổng</th></tr></thead><tbody>
     {% for r in f.routes %}<tr><td>{{ r.prefix }}</td><td>{{ r.protocol }}</td><td>{{ r.next_hop or "-" }}</td>

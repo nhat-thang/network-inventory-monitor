@@ -32,6 +32,7 @@ from monitoring import (
     RebootRule,
 )
 from provisioning.config_pusher import ConfigPusher
+from monitoring.compliance import ComplianceChecker
 from reporting.markdown_report import MarkdownReport
 from reporting.history import HistoryLog
 
@@ -117,11 +118,26 @@ class NetworkService:
             ConfigChangedRule(),
         ]
 
+    def compliance_checker(self) -> ComplianceChecker:
+        """Checks against the baseline policy; the planned router IDs come from ospf_vars.yaml."""
+        try:
+            expected = self._variables("ospf")
+        except ConfigPushError:
+            expected = {}
+        return ComplianceChecker(expected=expected)
+
     def scan(self, records: List[Dict[str, Any]], on_result: ProgressCallback = None) -> ScanResult:
         """Collect facts, detect anomalies, write JSON/CSV/Markdown and the last-scan summary."""
         devices = self._build(records)
         manager = ConnectionManager(self._workers)
-        results = manager.run(devices, lambda dev: dev.get_facts(), on_result=on_result)
+        checker = self.compliance_checker()
+
+        def collect(dev: NetworkDevice) -> DeviceFacts:
+            facts = dev.get_facts()
+            facts.compliance = checker.evaluate(dev.name, dev.netmiko_device_type, dev.last_config)
+            return facts
+
+        results = manager.run(devices, collect, on_result=on_result)
         facts = sorted((r.result for r in results if r.success), key=lambda f: f.device)
         failures = sorted((r for r in results if not r.success), key=lambda r: r.device)
         engine = MonitoringEngine(self.rules(), snapshot_dir=self._out / "snapshots")
@@ -255,6 +271,8 @@ class NetworkService:
         """Numbers for the overview screen."""
         last = self.last_scan()
         backups = self.list_backups()
+        online = set(last["online"]) if last else set()
+        scanned = [f for name, f in self.last_facts().items() if name in online]
         return {
             "devices": len(self.inventory()),
             "last_scan": last,
@@ -265,4 +283,6 @@ class NetworkService:
             "backup_devices": sum(1 for v in backups.values() if v),
             "history": self._history.entries(limit=15),
             "reports": len(self.reports()),
+            "compliance": ComplianceChecker.overall_percent(scanned),
+            "compliance_failed": sum(not c.passed for f in scanned for c in f.compliance),
         }

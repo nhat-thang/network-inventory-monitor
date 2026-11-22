@@ -74,6 +74,8 @@ class MarkdownReport:
         alerts = sorted(alerts, key=lambda a: (a.rank, a.device, a.rule))
         facts = sorted(facts, key=lambda f: f.device)
         count = Counter(a.severity for a in alerts)
+        checks = [c for f in facts for c in f.compliance]
+        compliance = f"{100 * sum(c.passed for c in checks) / len(checks):.0f}%" if checks else None
         parts = [
             "# Báo cáo kiểm kê và giám sát trạng thái mạng\n",
             f"Thời điểm quét: {generated_at:%Y-%m-%d %H:%M:%S}\n",
@@ -85,6 +87,7 @@ class MarkdownReport:
                 ["Cảnh báo nghiêm trọng", count["critical"]],
                 ["Cảnh báo", count["warning"]],
                 ["Thông tin", count["info"]],
+                ["Tỷ lệ tuân thủ cấu hình", compliance],
             ], right=[1]),
             "## 2. Cảnh báo\n",
             md_table(["Mức độ", "Thiết bị", "Luật", "Nội dung"],
@@ -92,12 +95,14 @@ class MarkdownReport:
                       for a in alerts]),
             "## 3. Thiết bị\n",
             self._devices(facts, failures),
-            "## 4. Chi tiết từng thiết bị\n",
+            "## 4. Tuân thủ cấu hình\n",
+            self._compliance(facts),
+            "## 5. Chi tiết từng thiết bị\n",
         ]
         for f in facts:
             parts.append(self._detail(f))
         if failures:
-            parts.append("## 5. Thiết bị không kết nối được\n")
+            parts.append("## 6. Thiết bị không kết nối được\n")
             parts.append(md_table(["Thiết bị", "Lỗi"], [[r.device, r.error] for r in sorted(failures, key=lambda r: r.device)]))
         return "\n".join(parts)
 
@@ -112,12 +117,30 @@ class MarkdownReport:
                 None if f.memory_percent is None else f"{f.memory_percent:.0f}%",
                 f"{sum(i.oper_up for i in f.interfaces)}/{len(f.interfaces)}", len(f.routes),
                 sum(n.state.lower().startswith("full") for n in f.ospf_neighbors), len(f.lldp_neighbors),
+                None if f.compliance_percent is None else f"{f.compliance_percent:.0f}%",
             ])
         for r in failures:
-            rows.append([r.device, "**Mất kết nối**"] + [None] * 10)
+            rows.append([r.device, "**Mất kết nối**"] + [None] * 11)
         rows.sort(key=lambda x: x[0])
         return md_table(["Thiết bị", "Trạng thái", "Hãng", "Phiên bản", "Hostname", "Uptime", "CPU", "RAM",
-                         "Cổng up", "Route", "OSPF Full", "LLDP"], rows, right=[5, 6, 7, 8, 9, 10, 11])
+                         "Cổng up", "Route", "OSPF Full", "LLDP", "Tuân thủ"], rows,
+                        right=[5, 6, 7, 8, 9, 10, 11, 12])
+
+    @staticmethod
+    def _compliance(facts: List[DeviceFacts]) -> str:
+        names = []
+        for f in facts:
+            for c in f.compliance:
+                if c.description not in names:
+                    names.append(c.description)
+        rows = []
+        for desc in names:
+            row = [desc]
+            for f in facts:
+                result = next((c for c in f.compliance if c.description == desc), None)
+                row.append("-" if result is None else ("Đạt" if result.passed else f"**Không đạt** ({result.detail})"))
+            rows.append(row)
+        return md_table(["Tiêu chí"] + [f.device for f in facts], rows)
 
     @staticmethod
     def _detail(f: DeviceFacts) -> str:

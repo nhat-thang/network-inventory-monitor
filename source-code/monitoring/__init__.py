@@ -1,4 +1,6 @@
-"""Anomaly detection rules (Strategy pattern) and the engine that runs them."""
+"""Anomaly detection rules and compliance checks (Strategy pattern) and the engine that runs them."""
+
+from monitoring.compliance import ComplianceCheck, ComplianceChecker
 
 from monitoring.engine import MonitoringEngine
 from monitoring.rules import (
@@ -12,6 +14,8 @@ from monitoring.rules import (
 )
 
 __all__ = [
+    "ComplianceCheck",
+    "ComplianceChecker",
     "MonitoringEngine",
     "AnomalyRule",
     "ConfigChangedRule",

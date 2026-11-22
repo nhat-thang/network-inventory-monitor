@@ -10,10 +10,11 @@ Hệ thống kiểm kê và giám sát trạng thái mạng đa nhà cung cấp,
 2. **Kết nối:** SSH tới nhiều thiết bị song song; lỗi ở một thiết bị không làm dừng chương trình.
 3. **Thu thập thông tin:** phiên bản OS, serial, uptime, trạng thái cổng, bảng định tuyến, OSPF neighbor, láng giềng LLDP, bảng ARP, CPU, RAM.
 4. **Phát hiện bất thường:** thiết bị offline, cổng down, CPU cao, RAM cao, mất OSPF neighbor, thiết bị khởi động lại, cấu hình bị thay đổi.
+   **Kiểm tra tuân thủ cấu hình:** bật SSH, tắt Telnet, bật LLDP, có banner đăng nhập, OSPF router-id đúng quy hoạch; tính tỷ lệ % cho từng thiết bị và toàn mạng.
 5. **Báo cáo:** file Markdown `.md` (tổng quan, cảnh báo, bảng thiết bị, chi tiết cổng / định tuyến / OSPF / LLDP / ARP của từng thiết bị), kèm JSON và CSV; lịch sử thao tác lưu trong `output/history.jsonl`.
 6. **Sao lưu và khôi phục:** lưu cấu hình kèm thời gian, sao lưu định kỳ, so sánh hai phiên bản, rollback.
-7. **Cấu hình hàng loạt:** áp template Jinja2 (`ospf`, `baseline`: bật LLDP và banner) cho nhiều thiết bị, có dry-run và tự rollback khi lỗi.
-8. **Giao diện web (Flask):** xem tổng quan, chọn thiết bị để quét / sao lưu / áp cấu hình và theo dõi tiến trình từng thiết bị theo thời gian thực, xem và so sánh bản sao lưu, xem và tải báo cáo .md, xem lịch sử. Phần lõi vẫn chạy độc lập qua CLI.
+7. **Cấu hình hàng loạt:** áp template Jinja2 (`ospf`, `baseline`: bật LLDP, tắt Telnet, thêm banner) cho nhiều thiết bị, có dry-run và tự rollback khi lỗi.
+8. **Giao diện web (Flask):** xem tổng quan (online/offline, số bản sao lưu, tỷ lệ tuân thủ, lịch sử thao tác), chọn thiết bị để quét / sao lưu / áp cấu hình và theo dõi tiến trình từng thiết bị theo thời gian thực, xem và so sánh bản sao lưu, xem và tải báo cáo .md, xem lịch sử. Phần lõi vẫn chạy độc lập qua CLI.
 
 ## Cấu trúc repo
 
@@ -63,7 +64,7 @@ python main.py backup                         # sao lưu running-config
 python main.py backup --every 30 --times 4    # sao lưu định kỳ 30 phút/lần, 4 lần
 python main.py diff R1                        # so sánh 2 bản sao lưu gần nhất của R1
 python main.py rollback R1 <file>             # khôi phục R1 về một bản sao lưu
-python main.py deploy baseline --dry-run      # xem trước template baseline (LLDP + banner)
+python main.py deploy baseline --dry-run      # xem trước template baseline (LLDP, tắt Telnet, banner)
 python main.py deploy ospf --tag vyos         # áp template OSPF cho các thiết bị có tag vyos
 python main.py web                            # mở giao diện web tại http://127.0.0.1:5000
 ```
@@ -77,7 +78,7 @@ cd source-code
 pytest
 ```
 
-77 test, không cần lab: parser được kiểm tra bằng output thật của router lưu trong `tests/samples/`; lớp dịch vụ và giao diện web được kiểm tra bằng thiết bị giả lập trả về chính các output đó (`tests/fakes.py`).
+81 test, không cần lab: parser được kiểm tra bằng output thật của router lưu trong `tests/samples/`; lớp dịch vụ và giao diện web được kiểm tra bằng thiết bị giả lập trả về chính các output đó (`tests/fakes.py`).
 
 ## Bảo mật
 
