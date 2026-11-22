@@ -1,0 +1,10 @@
+# RouterOS 7: every "add" is wrapped in ":if (not found) do={...}" so running the
+# template twice changes nothing (idempotent).
+{% for intf in interfaces %}
+:if ([:len [/ip address find address="{{ intf.ip }}/{{ intf.prefixlen }}" interface={{ intf.name }}]] = 0) do={/ip address add address={{ intf.ip }}/{{ intf.prefixlen }} interface={{ intf.name }} comment=ospf-link}
+{% endfor %}
+:if ([:len [/routing ospf instance find name=default-v2]] = 0) do={/routing ospf instance add name=default-v2 version=2 router-id={{ router_id }}}
+:if ([:len [/routing ospf area find name=backbone-v2]] = 0) do={/routing ospf area add name=backbone-v2 area-id=0.0.0.0 instance=default-v2}
+{% for intf in interfaces %}
+:if ([:len [/routing ospf interface-template find networks="{{ intf.network }}"]] = 0) do={/routing ospf interface-template add area=backbone-v2 networks={{ intf.network }}}
+{% endfor %}
