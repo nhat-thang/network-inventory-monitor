@@ -202,7 +202,7 @@ def build_parser() -> argparse.ArgumentParser:
     inv_rm.add_argument("name")
     inv_rm.set_defaults(func=cmd_inventory_remove)
 
-    scan = sub.add_parser("scan", help="collect facts, detect anomalies, write the Excel report")
+    scan = sub.add_parser("scan", help="collect facts, detect anomalies, write the Markdown report")
     add_filters(scan)
     scan.add_argument("--cpu-threshold", type=float, default=80.0)
     scan.add_argument("--memory-threshold", type=float, default=90.0)

@@ -12,7 +12,7 @@
   <div class="box info">
     <div class="num">{{ d.backup_count }}</div><div class="lbl">Bản sao lưu ({{ d.backup_devices }} thiết bị)</div></div>
   <div class="box">
-    <div class="num">{{ d.reports }}</div><div class="lbl">Báo cáo Excel</div></div>
+    <div class="num">{{ d.reports }}</div><div class="lbl">Báo cáo (.md)</div></div>
 </div>
 <p class="muted">
   {% if d.last_scan %}Lần quét gần nhất: {{ d.last_scan.time.replace("T", " ") }}.

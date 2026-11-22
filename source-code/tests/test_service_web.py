@@ -1,10 +1,9 @@
-"""End-to-end tests of the service layer, the Excel report and the web UI with simulated devices."""
+"""End-to-end tests of the service layer, the Markdown report and the web UI with simulated devices."""
 
 import shutil
 from pathlib import Path
 
 import pytest
-from openpyxl import load_workbook
 
 from core.scheduler import PeriodicRunner
 from reporting.history import HistoryLog
@@ -29,7 +28,7 @@ def service(base):
     return NetworkService(base, base / "output", workers=4)
 
 
-def test_scan_writes_excel_json_snapshot_and_history(service):
+def test_scan_writes_markdown_json_snapshot_and_history(service):
     seen = []
     result = service.scan(service.select(), on_result=lambda r: seen.append(r.device))
     assert sorted(seen) == ["R1", "R2", "VY1", "VY2"]
@@ -37,9 +36,11 @@ def test_scan_writes_excel_json_snapshot_and_history(service):
     r1 = result.facts[0]
     assert len(r1.routes) == 5 and len(r1.lldp_neighbors) == 2 and r1.memory_percent == 54.5
 
-    wb = load_workbook(result.report_path)
-    assert wb.sheetnames == ["Tổng quan", "Thiết bị", "Cảnh báo", "Cổng", "Định tuyến", "OSPF", "LLDP", "ARP"]
-    assert wb["Thiết bị"]["A2"].value == "R1" and wb["Định tuyến"].max_row == 1 + 5 * 2 + 8 * 2
+    text = result.report_path.read_text(encoding="utf-8")
+    assert result.report_path.suffix == ".md" and text.startswith("# Báo cáo kiểm kê")
+    assert "| Trực tuyến | 4 |" in text and text.count("### ") == 4
+    assert "| 10.0.24.0/30 | ospf | 10.0.12.2 | ether2 |" in text
+    assert "| ether1 | R2-MikroTik | ether1 | MikroTik |" in text
     assert (service.output_dir / "facts.json").exists() and service.last_scan()["online"] == ["R1", "R2", "VY1", "VY2"]
     assert service.history.entries()[0]["action"] == "scan"
 
@@ -49,7 +50,8 @@ def test_scan_reports_offline_device(service):
     result = service.scan(service.select())
     assert [f.device for f in result.failures] == ["VY2"]
     assert any(a.rule == "device_offline" and a.device == "VY2" for a in result.alerts)
-    assert load_workbook(result.report_path)["Thiết bị"]["B5"].value == "Mất kết nối"
+    text = result.report_path.read_text(encoding="utf-8")
+    assert "| VY2 | **Mất kết nối** |" in text and "## 5. Thiết bị không kết nối được" in text
 
 
 def test_backup_deploy_and_select(service):
@@ -116,8 +118,10 @@ def test_web_pages_and_live_scan(client):
     assert "R1-MikroTik" in client.get("/devices/R1").get_data(as_text=True)
     assert "TRỰC TUYẾN" in client.get("/devices").get_data(as_text=True)
     report = client.get("/reports").get_data(as_text=True)
-    name = report.split("report_")[1].split(".xlsx")[0]
-    assert client.get(f"/reports/report_{name}.xlsx").status_code == 200
+    name = "report_" + report.split("report_")[1].split(".md")[0] + ".md"
+    assert "# Báo cáo kiểm kê" in client.get(f"/reports/{name}").get_data(as_text=True)
+    download = client.get(f"/reports/{name}?download=1")
+    assert download.status_code == 200 and "attachment" in download.headers["Content-Disposition"]
 
 
 def test_web_backup_view_diff_and_deploy(client):
@@ -137,3 +141,11 @@ def test_web_backup_view_diff_and_deploy(client):
 def test_web_requires_a_device(client):
     resp = client.post("/tasks", data={"action": "scan"})
     assert resp.status_code == 302 and resp.headers["Location"].endswith("/devices")
+
+
+def test_markdown_table_escapes_pipes_and_empty_values():
+    from reporting.markdown_report import md_table
+
+    text = md_table(["A", "B"], [["x|y", None], ["multi\nline", 3.6]], right=[1])
+    assert "| x\\|y | - |" in text and "| multi line | 4 |" in text and "| --- | ---: |" in text
+    assert md_table(["A"], []) == "_Không có dữ liệu._\n"

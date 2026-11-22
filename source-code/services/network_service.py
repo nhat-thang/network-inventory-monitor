@@ -32,7 +32,7 @@ from monitoring import (
     RebootRule,
 )
 from provisioning.config_pusher import ConfigPusher
-from reporting.excel_report import ExcelReport
+from reporting.markdown_report import MarkdownReport
 from reporting.history import HistoryLog
 
 logger = logging.getLogger("netmon")
@@ -118,7 +118,7 @@ class NetworkService:
         ]
 
     def scan(self, records: List[Dict[str, Any]], on_result: ProgressCallback = None) -> ScanResult:
-        """Collect facts, detect anomalies, write JSON/CSV/Excel and the last-scan summary."""
+        """Collect facts, detect anomalies, write JSON/CSV/Markdown and the last-scan summary."""
         devices = self._build(records)
         manager = ConnectionManager(self._workers)
         results = manager.run(devices, lambda dev: dev.get_facts(), on_result=on_result)
@@ -130,8 +130,8 @@ class NetworkService:
         FactsCollector.to_json(facts, self._out / "facts.json")
         FactsCollector.to_csv(facts, self._out / "facts.csv")
         stamp = datetime.now()
-        report = ExcelReport().render(
-            facts, failures, alerts, self.reports_dir / f"report_{stamp:%Y%m%d-%H%M%S}.xlsx", stamp)
+        report = MarkdownReport().render(
+            facts, failures, alerts, self.reports_dir / f"report_{stamp:%Y%m%d-%H%M%S}.md", stamp)
         self._save_last_scan(facts, failures, alerts, report, stamp)
         self._history.record("scan", [r["name"] for r in records], len(facts), len(failures),
                              f"{len(alerts)} cảnh báo, báo cáo {report.name}", self._source)
@@ -240,10 +240,10 @@ class NetworkService:
 
     # ---------------------------------------------------------- reports
     def reports(self) -> List[Path]:
-        """Excel reports, newest first."""
+        """Markdown reports, newest first."""
         if not self.reports_dir.exists():
             return []
-        return sorted(self.reports_dir.glob("report_*.xlsx"), reverse=True)
+        return sorted(self.reports_dir.glob("report_*.md"), reverse=True)
 
     def report_file(self, name: str) -> Path:
         path = (self.reports_dir / Path(name).name).resolve()

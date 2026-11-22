@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h1><span class="mono">{{ path.name }}</span></h1>
+<div class="toolbar">
+  <a class="btn secondary" href="{{ url_for('download_report', name=path.name, download=1) }}">Tải về (.md)</a>
+  <a href="{{ url_for('reports') }}">Quay lại</a>
+</div>
+<pre>{{ text }}</pre>
+{% endblock %}

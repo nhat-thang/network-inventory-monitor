@@ -27,7 +27,7 @@ def create_app(base_dir: Path, output_dir: Path) -> Flask:
 
     @app.template_filter("uptime")
     def _uptime(seconds):
-        from reporting.excel_report import humanize_seconds
+        from reporting.markdown_report import humanize_seconds
 
         return humanize_seconds(seconds)
 
@@ -79,7 +79,7 @@ def create_app(base_dir: Path, output_dir: Path) -> Flask:
                         "alerts": [{"device": a.device, "severity": a.severity, "message": a.message}
                                    for a in result.alerts],
                         "link": f"{reports_url}/{result.report_path.name}",
-                        "link_text": f"Tải báo cáo {result.report_path.name}"}
+                        "link_text": f"Xem báo cáo {result.report_path.name}"}
         elif action == "backup":
             def work(on_result) -> Dict[str, Any]:
                 results = service.backup(records, lambda r: on_result(_named(r)))
@@ -162,7 +162,9 @@ def create_app(base_dir: Path, output_dir: Path) -> Flask:
     @app.route("/reports/<name>")
     def download_report(name: str):
         path = service.report_file(name)
-        return send_file(path, as_attachment=True, download_name=path.name)
+        if request.args.get("download"):
+            return send_file(path, as_attachment=True, download_name=path.name, mimetype="text/markdown")
+        return render_template("report_view.html", path=path, text=path.read_text(encoding="utf-8"))
 
     @app.route("/history")
     def history():
