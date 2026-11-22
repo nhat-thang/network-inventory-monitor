@@ -6,7 +6,7 @@ them and produce ``Alert`` objects, reporting renders both.
 Change these only after agreeing with the whole team.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -48,6 +48,28 @@ class DeviceFacts:
     config_hash: Optional[str] = None
     collected_at: datetime = field(default_factory=datetime.now)
 
+    @property
+    def interfaces_down(self) -> List[InterfaceStatus]:
+        """Interfaces enabled by the admin but without link."""
+        return [i for i in self.interfaces if i.admin_up and not i.oper_up]
+
+    def to_dict(self) -> Dict[str, Any]:
+        """JSON-friendly dict (datetime as ISO string)."""
+        data = asdict(self)
+        data["collected_at"] = self.collected_at.isoformat(timespec="seconds")
+        return data
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "DeviceFacts":
+        """Inverse of ``to_dict`` (used to reload saved snapshots)."""
+        data = dict(data)
+        data["interfaces"] = [InterfaceStatus(**i) for i in data.get("interfaces", [])]
+        data["ospf_neighbors"] = [OspfNeighbor(**n) for n in data.get("ospf_neighbors", [])]
+        if isinstance(data.get("collected_at"), str):
+            data["collected_at"] = datetime.fromisoformat(data["collected_at"])
+        known = {f for f in cls.__dataclass_fields__}
+        return cls(**{k: v for k, v in data.items() if k in known})
+
 
 @dataclass
 class Alert:
@@ -58,6 +80,13 @@ class Alert:
     severity: str  # "info" | "warning" | "critical"
     message: str
     timestamp: datetime = field(default_factory=datetime.now)
+
+    SEVERITY_ORDER = {"critical": 0, "warning": 1, "info": 2}
+
+    @property
+    def rank(self) -> int:
+        """0 = most severe; used to sort alerts."""
+        return self.SEVERITY_ORDER.get(self.severity, 3)
 
 
 @dataclass
