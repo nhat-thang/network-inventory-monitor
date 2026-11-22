@@ -3,213 +3,168 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Báo cáo giám sát mạng – 2026-11-22 08:43:18</title>
+<title>Báo cáo giám sát mạng - 2026-11-22 08:43:18</title>
 <style>
-  :root {
-    --surface: #fcfcfb; --card: #ffffff; --ink: #0b0b0b; --ink-2: #52514b; --ink-3: #75746d;
-    --hair: #e1e0d9; --ring: rgba(11,11,11,0.10);
-    --good: #0ca30c; --warning: #fab219; --critical: #d03b3b; --info: #3b6fd0;
-    --good-text: #006300; --track: #e8f0fb; --fill: #3b6fd0;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --surface: #1a1a19; --card: #222220; --ink: #f2f1ec; --ink-2: #b9b8b0; --ink-3: #8c8b84;
-      --hair: #2c2c2a; --ring: rgba(255,255,255,0.10);
-      --good-text: #0ca30c; --info: #6f9be6; --track: #26324a; --fill: #6f9be6;
-    }
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--surface); color: var(--ink);
-         font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  main { max-width: 1180px; margin: 0 auto; padding: 28px 24px 48px; }
-  header { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap;
-           border-bottom: 1px solid var(--hair); padding-bottom: 16px; margin-bottom: 20px; }
-  h1 { font-size: 22px; margin: 0 0 2px; font-weight: 650; }
-  h2 { font-size: 16px; margin: 28px 0 10px; font-weight: 650; }
-  .muted { color: var(--ink-3); }
-  .meta { color: var(--ink-2); font-size: 13px; text-align: right; }
-  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
-  .tile { background: var(--card); border: 1px solid var(--ring); border-radius: 10px; padding: 14px 16px; }
-  .tile .label { color: var(--ink-2); font-size: 13px; }
-  .tile .value { font-size: 30px; font-weight: 650; margin-top: 2px; }
-  .tile .sub { color: var(--ink-3); font-size: 12px; }
-  .card { background: var(--card); border: 1px solid var(--ring); border-radius: 10px; overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; }
-  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--hair); vertical-align: middle; }
-  th { white-space: nowrap; color: var(--ink-2); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
-  tr:last-child td { border-bottom: 0; }
-  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-  .nowrap { white-space: nowrap; }
-  code { font: 12.5px ui-monospace, SFMono-Regular, Consolas, monospace; }
-  .pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
-  .dot { width: 18px; height: 18px; border-radius: 50%; display: inline-grid; place-items: center;
-         color: #fff; font-size: 11px; font-weight: 700; line-height: 1; }
-  .dot.good { background: var(--good); } .dot.warning { background: var(--warning); color: #0b0b0b; }
-  .dot.critical { background: var(--critical); } .dot.info { background: var(--info); }
-  .meter { display: flex; align-items: center; gap: 8px; min-width: 120px; }
-  .track { flex: 1; height: 8px; border-radius: 4px; background: var(--track); overflow: hidden; }
-  .bar { height: 100%; border-radius: 4px; background: var(--fill); }
-  .bar.warning { background: var(--warning); } .bar.critical { background: var(--critical); }
-  .empty { padding: 18px; color: var(--ink-2); }
-  details { background: var(--card); border: 1px solid var(--ring); border-radius: 10px; margin-bottom: 10px; }
-  summary { cursor: pointer; padding: 12px 16px; font-weight: 600; display: flex; gap: 10px; align-items: center; }
-  summary .muted { font-weight: 400; }
-  .detail-body { padding: 0 16px 16px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
-  .detail-body h3 { font-size: 13px; margin: 6px 0; color: var(--ink-2); font-weight: 600; }
-  .detail-body table td, .detail-body table th { padding: 6px 8px; }
-  footer { margin-top: 32px; color: var(--ink-3); font-size: 12px; }
-  @media print { details { break-inside: avoid; } details:not([open]) .detail-body { display: grid; } }
+  body { margin: 0; background: #f0f2f5; color: #222; font-family: Arial, Helvetica, sans-serif; font-size: 14px; }
+  .topbar { background: #2c3e50; color: #fff; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .topbar h1 { font-size: 18px; margin: 0; font-weight: bold; }
+  .topbar .time { font-size: 13px; color: #d5dde5; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px 24px 40px; }
+  h2 { font-size: 16px; margin: 24px 0 8px; padding-bottom: 4px; border-bottom: 2px solid #2c3e50; }
+  .summary { display: flex; gap: 12px; flex-wrap: wrap; }
+  .box { flex: 1; min-width: 180px; background: #fff; border: 1px solid #ccc; border-left: 4px solid #6c757d; padding: 10px 14px; }
+  .box.ok { border-left-color: #28a745; } .box.crit { border-left-color: #dc3545; }
+  .box.warn { border-left-color: #ffc107; } .box.info { border-left-color: #17a2b8; }
+  .box .num { font-size: 26px; font-weight: bold; }
+  .box .lbl { color: #555; font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; background: #fff; }
+  th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; vertical-align: middle; }
+  th { background: #e9ecef; font-weight: bold; white-space: nowrap; }
+  tbody tr:nth-child(even) { background: #f8f9fa; }
+  td.r { text-align: right; } .nowrap { white-space: nowrap; }
+  .mono { font-family: Consolas, "Courier New", monospace; font-size: 13px; }
+  .badge { display: inline-block; padding: 2px 6px; border-radius: 2px; font-size: 12px; font-weight: bold; color: #fff; white-space: nowrap; }
+  .badge.good { background: #28a745; } .badge.warning { background: #ffc107; color: #222; }
+  .badge.critical { background: #dc3545; } .badge.info { background: #17a2b8; } .badge.off { background: #6c757d; }
+  .cpu { display: inline-block; width: 80px; height: 10px; border: 1px solid #999; background: #fff; vertical-align: middle; margin-right: 6px; }
+  .cpu span { display: block; height: 100%; background: #5b9bd5; }
+  .cpu span.warning { background: #ffc107; } .cpu span.critical { background: #dc3545; }
+  .empty { background: #fff; border: 1px solid #ccc; padding: 12px; }
+  details { background: #fff; border: 1px solid #ccc; margin-bottom: 8px; }
+  summary { cursor: pointer; padding: 8px 12px; font-weight: bold; background: #f8f9fa; }
+  .detail { display: flex; gap: 16px; flex-wrap: wrap; padding: 12px; }
+  .detail > div { flex: 1; min-width: 320px; }
+  .detail h3 { font-size: 14px; margin: 4px 0 6px; }
+  .muted { color: #777; }
 </style>
 </head>
 <body>
-<main>
+<div class="topbar">
+  <h1>Báo cáo kiểm kê và giám sát trạng thái mạng</h1>
+  <div class="time">Thời điểm quét: 2026-11-22 08:43:18</div>
+</div>
 
-<header>
-  <div>
-    <h1>Báo cáo kiểm kê và giám sát trạng thái mạng</h1>
-    <div class="muted">Lab GNS3 · mạng quản lý 192.168.100.0/24</div>
-  </div>
-  <div class="meta">Thời điểm quét: <strong>2026-11-22 08:43:18</strong><br>Người thực hiện: junif</div>
-</header>
-
-<section class="tiles" aria-label="Tổng quan">
-  <div class="tile"><div class="label">Thiết bị trực tuyến</div>
-    <div class="value">3<span class="muted" style="font-size:18px"> / 4</span></div>
-    <div class="sub">1 thiết bị không kết nối được</div></div>
-  <div class="tile"><div class="label">Cảnh báo nghiêm trọng</div>
-    <div class="value">7</div><div class="sub"><span class="pill"><span class="dot critical" aria-hidden="true">✕</span>cần xử lý ngay</span></div></div>
-  <div class="tile"><div class="label">Cảnh báo</div>
-    <div class="value">0</div><div class="sub">0 thông tin</div></div>
-  <div class="tile"><div class="label">Cổng có IP bị mất kết nối</div>
-    <div class="value">2</div><div class="sub">trên 22 cổng đã quét</div></div>
-</section>
+<div class="container">
+<div class="summary">
+  <div class="box crit"><div class="num">3/4</div><div class="lbl">Thiết bị trực tuyến (1 mất kết nối)</div></div>
+  <div class="box crit"><div class="num">7</div><div class="lbl">Cảnh báo nghiêm trọng</div></div>
+  <div class="box warn"><div class="num">0</div><div class="lbl">Cảnh báo</div></div>
+  <div class="box info"><div class="num">0</div><div class="lbl">Thông tin</div></div>
+  <div class="box"><div class="num">2</div><div class="lbl">Cổng có IP bị mất kết nối / 22 cổng</div></div>
+</div>
 
 <h2>Danh sách cảnh báo</h2>
-<div class="card">
-  <table>
-    <thead><tr><th>Mức độ</th><th>Thiết bị</th><th>Luật</th><th>Nội dung</th><th class="num">Thời gian</th></tr></thead>
-    <tbody>
-      <tr><td><span class="pill"><span class="dot critical" aria-hidden="true">✕</span>Nghiêm trọng</span></td><td><strong>R1</strong></td>
-          <td><code>interface_down</code></td><td>Interface ether2 went down</td>
-          <td class="num muted">08:43:18</td></tr>
-      <tr><td><span class="pill"><span class="dot critical" aria-hidden="true">✕</span>Nghiêm trọng</span></td><td><strong>R1</strong></td>
-          <td><code>ospf_neighbor_lost</code></td><td>OSPF neighbor 2.2.2.2 lost</td>
-          <td class="num muted">08:43:18</td></tr>
-      <tr><td><span class="pill"><span class="dot critical" aria-hidden="true">✕</span>Nghiêm trọng</span></td><td><strong>R2</strong></td>
-          <td><code>interface_down</code></td><td>Interface ether2 went down</td>
-          <td class="num muted">08:43:18</td></tr>
-      <tr><td><span class="pill"><span class="dot critical" aria-hidden="true">✕</span>Nghiêm trọng</span></td><td><strong>R2</strong></td>
-          <td><code>ospf_neighbor_lost</code></td><td>OSPF neighbor 1.1.1.1 lost</td>
-          <td class="num muted">08:43:18</td></tr>
-      <tr><td><span class="pill"><span class="dot critical" aria-hidden="true">✕</span>Nghiêm trọng</span></td><td><strong>R2</strong></td>
-          <td><code>ospf_neighbor_lost</code></td><td>OSPF neighbor 4.4.4.4 lost</td>
-          <td class="num muted">08:43:18</td></tr>
-      <tr><td><span class="pill"><span class="dot critical" aria-hidden="true">✕</span>Nghiêm trọng</span></td><td><strong>VY1</strong></td>
-          <td><code>ospf_neighbor_lost</code></td><td>OSPF neighbor 4.4.4.4 lost</td>
-          <td class="num muted">08:43:18</td></tr>
-      <tr><td><span class="pill"><span class="dot critical" aria-hidden="true">✕</span>Nghiêm trọng</span></td><td><strong>VY2</strong></td>
-          <td><code>device_offline</code></td><td>Device unreachable: DeviceTimeoutError: VY2: no response from 192.168.100.22</td>
-          <td class="num muted">08:43:18</td></tr>
-    </tbody>
-  </table>
-</div>
+<table>
+  <thead><tr><th>Mức độ</th><th>Thiết bị</th><th>Luật</th><th>Nội dung</th><th>Thời gian</th></tr></thead>
+  <tbody>
+    <tr><td><span class="badge critical">NGHIÊM TRỌNG</span></td><td><b>R1</b></td>
+        <td class="mono">interface_down</td><td>Interface ether2 went down</td><td class="nowrap">08:43:18</td></tr>
+    <tr><td><span class="badge critical">NGHIÊM TRỌNG</span></td><td><b>R1</b></td>
+        <td class="mono">ospf_neighbor_lost</td><td>OSPF neighbor 2.2.2.2 lost</td><td class="nowrap">08:43:18</td></tr>
+    <tr><td><span class="badge critical">NGHIÊM TRỌNG</span></td><td><b>R2</b></td>
+        <td class="mono">interface_down</td><td>Interface ether2 went down</td><td class="nowrap">08:43:18</td></tr>
+    <tr><td><span class="badge critical">NGHIÊM TRỌNG</span></td><td><b>R2</b></td>
+        <td class="mono">ospf_neighbor_lost</td><td>OSPF neighbor 1.1.1.1 lost</td><td class="nowrap">08:43:18</td></tr>
+    <tr><td><span class="badge critical">NGHIÊM TRỌNG</span></td><td><b>R2</b></td>
+        <td class="mono">ospf_neighbor_lost</td><td>OSPF neighbor 4.4.4.4 lost</td><td class="nowrap">08:43:18</td></tr>
+    <tr><td><span class="badge critical">NGHIÊM TRỌNG</span></td><td><b>VY1</b></td>
+        <td class="mono">ospf_neighbor_lost</td><td>OSPF neighbor 4.4.4.4 lost</td><td class="nowrap">08:43:18</td></tr>
+    <tr><td><span class="badge critical">NGHIÊM TRỌNG</span></td><td><b>VY2</b></td>
+        <td class="mono">device_offline</td><td>Device unreachable: DeviceTimeoutError: VY2: no response from 192.168.100.22</td><td class="nowrap">08:43:18</td></tr>
+  </tbody>
+</table>
 
 <h2>Thiết bị</h2>
-<div class="card">
-  <table>
-    <thead><tr><th>Trạng thái</th><th>Thiết bị</th><th>Hãng / phiên bản</th><th>Hostname</th>
-      <th class="num">Uptime</th><th>CPU</th><th class="num">Cổng up</th><th class="num">OSPF</th><th>Serial / ID</th></tr></thead>
-    <tbody>
-      <tr>
-        <td><span class="pill"><span class="dot critical" aria-hidden="true">✕</span>Nghiêm trọng</span></td>
-        <td><strong>R1</strong></td>
-        <td>MikroTik RouterOS<br><span class="muted">RouterOS 7.24.6 (long-term)</span></td>
-        <td class="nowrap">R1-MikroTik</td>
-        <td class="num nowrap">14m 13s</td>
-        <td>
-          <div class="meter" title="CPU 0%">
-            <div class="track"><div class="bar " style="width: 0.0%"></div></div>
-            <span class="num">0%</span></div>
-        </td>
-        <td class="num nowrap">3 / 9</td>
-        <td class="num">1</td>
-        <td><code>pNwYzAOYZKB</code></td>
-      </tr>
-      <tr>
-        <td><span class="pill"><span class="dot critical" aria-hidden="true">✕</span>Nghiêm trọng</span></td>
-        <td><strong>R2</strong></td>
-        <td>MikroTik RouterOS<br><span class="muted">RouterOS 7.24.6 (long-term)</span></td>
-        <td class="nowrap">R2-MikroTik</td>
-        <td class="num nowrap">14m 9s</td>
-        <td>
-          <div class="meter" title="CPU 0%">
-            <div class="track"><div class="bar " style="width: 0.0%"></div></div>
-            <span class="num">0%</span></div>
-        </td>
-        <td class="num nowrap">3 / 9</td>
-        <td class="num">0</td>
-        <td><code>3WWC6wGvfYG</code></td>
-      </tr>
-      <tr>
-        <td><span class="pill"><span class="dot critical" aria-hidden="true">✕</span>Nghiêm trọng</span></td>
-        <td><strong>VY1</strong></td>
-        <td>VyOS<br><span class="muted">VyOS 2026.11.18-0016-rolling</span></td>
-        <td class="nowrap">VY1-VyOS</td>
-        <td class="num nowrap">13m 47s</td>
-        <td>
-          <div class="meter" title="CPU 0%">
-            <div class="track"><div class="bar " style="width: 0.0%"></div></div>
-            <span class="num">0%</span></div>
-        </td>
-        <td class="num nowrap">4 / 4</td>
-        <td class="num">1</td>
-        <td><code>fa34e875-1e73-421b-ac99-9afa6eac45a5</code></td>
-      </tr>
-      <tr>
-        <td><span class="pill"><span class="dot critical" aria-hidden="true">✕</span>Mất kết nối</span></td>
-        <td><strong>VY2</strong></td>
-        <td colspan="7" class="muted">DeviceTimeoutError: VY2: no response from 192.168.100.22</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+<table>
+  <thead><tr><th>Trạng thái</th><th>Thiết bị</th><th>Hãng</th><th>Phiên bản</th><th>Hostname</th>
+    <th>Uptime</th><th>CPU</th><th>Cổng up</th><th>OSPF</th><th>Serial / ID</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><span class="badge critical">NGHIÊM TRỌNG</span></td>
+      <td><b>R1</b></td>
+      <td>MikroTik RouterOS</td>
+      <td>RouterOS 7.24.6 (long-term)</td>
+      <td class="nowrap">R1-MikroTik</td>
+      <td class="r nowrap">14m 13s</td>
+      <td class="nowrap">
+        <span class="cpu"><span class="" style="width: 0.0%"></span></span>0%
+      </td>
+      <td class="r">3/9</td>
+      <td class="r">1</td>
+      <td class="mono">pNwYzAOYZKB</td>
+    </tr>
+    <tr>
+      <td><span class="badge critical">NGHIÊM TRỌNG</span></td>
+      <td><b>R2</b></td>
+      <td>MikroTik RouterOS</td>
+      <td>RouterOS 7.24.6 (long-term)</td>
+      <td class="nowrap">R2-MikroTik</td>
+      <td class="r nowrap">14m 9s</td>
+      <td class="nowrap">
+        <span class="cpu"><span class="" style="width: 0.0%"></span></span>0%
+      </td>
+      <td class="r">3/9</td>
+      <td class="r">0</td>
+      <td class="mono">3WWC6wGvfYG</td>
+    </tr>
+    <tr>
+      <td><span class="badge critical">NGHIÊM TRỌNG</span></td>
+      <td><b>VY1</b></td>
+      <td>VyOS</td>
+      <td>VyOS 2026.11.18-0016-rolling</td>
+      <td class="nowrap">VY1-VyOS</td>
+      <td class="r nowrap">13m 47s</td>
+      <td class="nowrap">
+        <span class="cpu"><span class="" style="width: 0.0%"></span></span>0%
+      </td>
+      <td class="r">4/4</td>
+      <td class="r">1</td>
+      <td class="mono">fa34e875-1e73-421b-ac99-9afa6eac45a5</td>
+    </tr>
+    <tr>
+      <td><span class="badge critical">MẤT KẾT NỐI</span></td>
+      <td><b>VY2</b></td>
+      <td colspan="8" class="muted">DeviceTimeoutError: VY2: no response from 192.168.100.22</td>
+    </tr>
+  </tbody>
+</table>
 
 <h2>Chi tiết từng thiết bị</h2>
 <details>
-  <summary><span class="pill"><span class="dot critical" aria-hidden="true">✕</span>R1</span> <span class="muted">R1-MikroTik · 9 cổng · 1 OSPF neighbor · 2 ARP</span></summary>
-  <div class="detail-body">
+  <summary>R1 (R1-MikroTik) - 9 cổng, 1 OSPF neighbor, 2 ARP</summary>
+  <div class="detail">
     <div>
       <h3>Cổng mạng</h3>
       <table>
         <thead><tr><th>Cổng</th><th>Địa chỉ IP</th><th>Admin</th><th>Link</th></tr></thead>
         <tbody>
-          <tr><td><code>ether1</code></td><td>192.168.100.11/24</td>
+          <tr><td class="mono">ether1</td><td>192.168.100.11/24</td>
               <td>bật</td>
-              <td><span class="pill"><span class="dot good" aria-hidden="true">✓</span>up</span></td></tr>
-          <tr><td><code>ether2</code></td><td>10.0.12.1/30</td>
+              <td><span class="badge good">UP</span></td></tr>
+          <tr><td class="mono">ether2</td><td>10.0.12.1/30</td>
               <td>bật</td>
-              <td><span class="pill"><span class="dot critical" aria-hidden="true">✕</span>down</span></td></tr>
-          <tr><td><code>ether3</code></td><td>10.0.13.1/30</td>
+              <td><span class="badge critical">DOWN</span></td></tr>
+          <tr><td class="mono">ether3</td><td>10.0.13.1/30</td>
               <td>bật</td>
-              <td><span class="pill"><span class="dot good" aria-hidden="true">✓</span>up</span></td></tr>
-          <tr><td><code>ether4</code></td><td>—</td>
-              <td>bật</td>
-              <td><span class="muted">không dùng</span></td></tr>
-          <tr><td><code>ether5</code></td><td>—</td>
+              <td><span class="badge good">UP</span></td></tr>
+          <tr><td class="mono">ether4</td><td>-</td>
               <td>bật</td>
               <td><span class="muted">không dùng</span></td></tr>
-          <tr><td><code>ether6</code></td><td>—</td>
+          <tr><td class="mono">ether5</td><td>-</td>
               <td>bật</td>
               <td><span class="muted">không dùng</span></td></tr>
-          <tr><td><code>ether7</code></td><td>—</td>
+          <tr><td class="mono">ether6</td><td>-</td>
               <td>bật</td>
               <td><span class="muted">không dùng</span></td></tr>
-          <tr><td><code>ether8</code></td><td>—</td>
+          <tr><td class="mono">ether7</td><td>-</td>
               <td>bật</td>
               <td><span class="muted">không dùng</span></td></tr>
-          <tr><td><code>lo</code></td><td>—</td>
+          <tr><td class="mono">ether8</td><td>-</td>
               <td>bật</td>
-              <td><span class="pill"><span class="dot good" aria-hidden="true">✓</span>up</span></td></tr>
+              <td><span class="muted">không dùng</span></td></tr>
+          <tr><td class="mono">lo</td><td>-</td>
+              <td>bật</td>
+              <td><span class="badge good">UP</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -218,57 +173,57 @@
       <table>
         <thead><tr><th>Router ID</th><th>Địa chỉ</th><th>Cổng</th><th>Trạng thái</th></tr></thead>
         <tbody>
-          <tr><td>3.3.3.3</td><td>10.0.13.2</td><td><code>ether3</code></td>
-              <td><span class="pill"><span class="dot good" aria-hidden="true">✓</span>Full</span></td></tr>
+          <tr><td>3.3.3.3</td><td>10.0.13.2</td><td class="mono">ether3</td>
+              <td><span class="badge good">Full</span></td></tr>
         </tbody>
       </table>
       <h3>Bảng ARP</h3>
       <table>
         <thead><tr><th>IP</th><th>MAC</th><th>Cổng</th></tr></thead>
         <tbody>
-          <tr><td>192.168.100.1</td><td><code>00:50:56:c0:00:03</code></td><td><code>ether1</code></td></tr>
-          <tr><td>10.0.13.2</td><td><code>0c:34:e8:75:00:01</code></td><td><code>ether3</code></td></tr>
+          <tr><td>192.168.100.1</td><td class="mono">00:50:56:c0:00:03</td><td class="mono">ether1</td></tr>
+          <tr><td>10.0.13.2</td><td class="mono">0c:34:e8:75:00:01</td><td class="mono">ether3</td></tr>
         </tbody>
       </table>
-      <p class="muted" style="margin-top:10px">Mã băm cấu hình: <code>2aad9efb0dc5506c</code> · thu thập lúc 08:43:09</p>
+      <p class="muted">Mã băm cấu hình: <span class="mono">2aad9efb0dc5506c</span> - thu thập lúc 08:43:09</p>
     </div>
   </div>
 </details>
 <details>
-  <summary><span class="pill"><span class="dot critical" aria-hidden="true">✕</span>R2</span> <span class="muted">R2-MikroTik · 9 cổng · 0 OSPF neighbor · 2 ARP</span></summary>
-  <div class="detail-body">
+  <summary>R2 (R2-MikroTik) - 9 cổng, 0 OSPF neighbor, 2 ARP</summary>
+  <div class="detail">
     <div>
       <h3>Cổng mạng</h3>
       <table>
         <thead><tr><th>Cổng</th><th>Địa chỉ IP</th><th>Admin</th><th>Link</th></tr></thead>
         <tbody>
-          <tr><td><code>ether1</code></td><td>192.168.100.12/24</td>
+          <tr><td class="mono">ether1</td><td>192.168.100.12/24</td>
               <td>bật</td>
-              <td><span class="pill"><span class="dot good" aria-hidden="true">✓</span>up</span></td></tr>
-          <tr><td><code>ether2</code></td><td>10.0.12.2/30</td>
+              <td><span class="badge good">UP</span></td></tr>
+          <tr><td class="mono">ether2</td><td>10.0.12.2/30</td>
               <td>bật</td>
-              <td><span class="pill"><span class="dot critical" aria-hidden="true">✕</span>down</span></td></tr>
-          <tr><td><code>ether3</code></td><td>10.0.24.1/30</td>
+              <td><span class="badge critical">DOWN</span></td></tr>
+          <tr><td class="mono">ether3</td><td>10.0.24.1/30</td>
               <td>bật</td>
-              <td><span class="pill"><span class="dot good" aria-hidden="true">✓</span>up</span></td></tr>
-          <tr><td><code>ether4</code></td><td>—</td>
-              <td>bật</td>
-              <td><span class="muted">không dùng</span></td></tr>
-          <tr><td><code>ether5</code></td><td>—</td>
+              <td><span class="badge good">UP</span></td></tr>
+          <tr><td class="mono">ether4</td><td>-</td>
               <td>bật</td>
               <td><span class="muted">không dùng</span></td></tr>
-          <tr><td><code>ether6</code></td><td>—</td>
+          <tr><td class="mono">ether5</td><td>-</td>
               <td>bật</td>
               <td><span class="muted">không dùng</span></td></tr>
-          <tr><td><code>ether7</code></td><td>—</td>
+          <tr><td class="mono">ether6</td><td>-</td>
               <td>bật</td>
               <td><span class="muted">không dùng</span></td></tr>
-          <tr><td><code>ether8</code></td><td>—</td>
+          <tr><td class="mono">ether7</td><td>-</td>
               <td>bật</td>
               <td><span class="muted">không dùng</span></td></tr>
-          <tr><td><code>lo</code></td><td>—</td>
+          <tr><td class="mono">ether8</td><td>-</td>
               <td>bật</td>
-              <td><span class="pill"><span class="dot good" aria-hidden="true">✓</span>up</span></td></tr>
+              <td><span class="muted">không dùng</span></td></tr>
+          <tr><td class="mono">lo</td><td>-</td>
+              <td>bật</td>
+              <td><span class="badge good">UP</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -278,34 +233,34 @@
       <table>
         <thead><tr><th>IP</th><th>MAC</th><th>Cổng</th></tr></thead>
         <tbody>
-          <tr><td>192.168.100.1</td><td><code>00:50:56:c0:00:03</code></td><td><code>ether1</code></td></tr>
-          <tr><td>10.0.24.2</td><td><code>0c:a3:25:32:00:01</code></td><td><code>ether3</code></td></tr>
+          <tr><td>192.168.100.1</td><td class="mono">00:50:56:c0:00:03</td><td class="mono">ether1</td></tr>
+          <tr><td>10.0.24.2</td><td class="mono">0c:a3:25:32:00:01</td><td class="mono">ether3</td></tr>
         </tbody>
       </table>
-      <p class="muted" style="margin-top:10px">Mã băm cấu hình: <code>d8447fb1bd4df316</code> · thu thập lúc 08:43:09</p>
+      <p class="muted">Mã băm cấu hình: <span class="mono">d8447fb1bd4df316</span> - thu thập lúc 08:43:09</p>
     </div>
   </div>
 </details>
 <details>
-  <summary><span class="pill"><span class="dot critical" aria-hidden="true">✕</span>VY1</span> <span class="muted">VY1-VyOS · 4 cổng · 1 OSPF neighbor · 3 ARP</span></summary>
-  <div class="detail-body">
+  <summary>VY1 (VY1-VyOS) - 4 cổng, 1 OSPF neighbor, 3 ARP</summary>
+  <div class="detail">
     <div>
       <h3>Cổng mạng</h3>
       <table>
         <thead><tr><th>Cổng</th><th>Địa chỉ IP</th><th>Admin</th><th>Link</th></tr></thead>
         <tbody>
-          <tr><td><code>eth0</code></td><td>192.168.100.21/24</td>
+          <tr><td class="mono">eth0</td><td>192.168.100.21/24</td>
               <td>bật</td>
-              <td><span class="pill"><span class="dot good" aria-hidden="true">✓</span>up</span></td></tr>
-          <tr><td><code>eth1</code></td><td>10.0.13.2/30</td>
+              <td><span class="badge good">UP</span></td></tr>
+          <tr><td class="mono">eth1</td><td>10.0.13.2/30</td>
               <td>bật</td>
-              <td><span class="pill"><span class="dot good" aria-hidden="true">✓</span>up</span></td></tr>
-          <tr><td><code>eth2</code></td><td>10.0.34.1/30</td>
+              <td><span class="badge good">UP</span></td></tr>
+          <tr><td class="mono">eth2</td><td>10.0.34.1/30</td>
               <td>bật</td>
-              <td><span class="pill"><span class="dot good" aria-hidden="true">✓</span>up</span></td></tr>
-          <tr><td><code>lo</code></td><td>127.0.0.1/8</td>
+              <td><span class="badge good">UP</span></td></tr>
+          <tr><td class="mono">lo</td><td>127.0.0.1/8</td>
               <td>bật</td>
-              <td><span class="pill"><span class="dot good" aria-hidden="true">✓</span>up</span></td></tr>
+              <td><span class="badge good">UP</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -314,25 +269,23 @@
       <table>
         <thead><tr><th>Router ID</th><th>Địa chỉ</th><th>Cổng</th><th>Trạng thái</th></tr></thead>
         <tbody>
-          <tr><td>1.1.1.1</td><td>10.0.13.1</td><td><code>eth1</code></td>
-              <td><span class="pill"><span class="dot good" aria-hidden="true">✓</span>Full</span></td></tr>
+          <tr><td>1.1.1.1</td><td>10.0.13.1</td><td class="mono">eth1</td>
+              <td><span class="badge good">Full</span></td></tr>
         </tbody>
       </table>
       <h3>Bảng ARP</h3>
       <table>
         <thead><tr><th>IP</th><th>MAC</th><th>Cổng</th></tr></thead>
         <tbody>
-          <tr><td>10.0.34.2</td><td><code>0c:a3:25:32:00:02</code></td><td><code>eth2</code></td></tr>
-          <tr><td>192.168.100.1</td><td><code>00:50:56:c0:00:03</code></td><td><code>eth0</code></td></tr>
-          <tr><td>10.0.13.1</td><td><code>0c:a3:0f:fd:00:02</code></td><td><code>eth1</code></td></tr>
+          <tr><td>10.0.34.2</td><td class="mono">0c:a3:25:32:00:02</td><td class="mono">eth2</td></tr>
+          <tr><td>192.168.100.1</td><td class="mono">00:50:56:c0:00:03</td><td class="mono">eth0</td></tr>
+          <tr><td>10.0.13.1</td><td class="mono">0c:a3:0f:fd:00:02</td><td class="mono">eth1</td></tr>
         </tbody>
       </table>
-      <p class="muted" style="margin-top:10px">Mã băm cấu hình: <code>a73291ce2329ab23</code> · thu thập lúc 08:43:12</p>
+      <p class="muted">Mã băm cấu hình: <span class="mono">a73291ce2329ab23</span> - thu thập lúc 08:43:12</p>
     </div>
   </div>
 </details>
-
-<footer>Tạo bởi Network Inventory Monitor (<code>python main.py scan</code>). Trang tĩnh, mở trực tiếp bằng trình duyệt, không cần kết nối mạng.</footer>
-</main>
+</div>
 </body>
 </html>
