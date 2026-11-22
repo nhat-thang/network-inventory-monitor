@@ -183,9 +183,9 @@ Không dùng card *Microsoft KM-TEST Loopback* như cách cũ: Cloud chạy trê
 
 #### Bước 4. Lấy project
 
-**Cách A — Import portable project (nhanh nhất):** tạo template ở Bước 5 trước (để GNS3 có image), sau đó chọn **File → Import portable project**, chọn file `Nhom1_HeThongKiemKeMang.gns3project` trong thư mục `lab/`, chạy trên **GNS3 VM**. File đã chứa sẵn cấu hình 4 router, bỏ qua Bước 6.
+**Cách A. Import portable project (nhanh nhất):** tạo template ở Bước 5 trước (để GNS3 có image), sau đó chọn **File → Import portable project**, chọn file `Nhom1_HeThongKiemKeMang.gns3project` trong thư mục `lab/`, chạy trên **GNS3 VM**. File đã chứa sẵn cấu hình 4 router, bỏ qua Bước 6.
 
-**Cách B — Dựng từ đầu:** làm Bước 5, mở `topology.gns3` (*File → Open project*), rồi làm Bước 6.
+**Cách B. Dựng từ đầu:** làm Bước 5, mở `topology.gns3` (*File → Open project*), rồi làm Bước 6.
 
 #### Bước 5. Tạo template router
 
@@ -198,7 +198,7 @@ GNS3 → **Edit → Preferences → QEMU → Qemu VMs → New**, luôn chọn **
 | Console | telnet | telnet |
 | Disk (hda) | **New image → Browse** → `chr-7.24.6.img` (file đã giải nén, không phải `.zip`) | **New image → Create** → qcow2, 4096 MiB, tên `VyOS-Router-hda.qcow2` |
 | Disk interface | virtio | ide |
-| CD/DVD | — | ISO VyOS |
+| CD/DVD | không dùng | ISO VyOS |
 | Boot priority | HDD | HDD or CD/DVD-ROM |
 | Adapters | 8 | 3 |
 | Name format | `ether{port1}` | `eth{0}` |
