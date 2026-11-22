@@ -28,3 +28,7 @@ class UnsupportedDeviceError(NetworkAutomationError):
 
 class ConfigPushError(NetworkAutomationError):
     """Applying configuration to a device failed."""
+
+
+class InventoryError(NetworkAutomationError):
+    """The inventory file or a device record is invalid."""

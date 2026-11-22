@@ -4,6 +4,7 @@ Run from the ``source-code`` directory, e.g. ``python main.py scan --group core`
 """
 
 import argparse
+import logging
 import sys
 from pathlib import Path
 from typing import List, Optional
@@ -11,6 +12,7 @@ from typing import List, Optional
 from backup import BackupManager
 from collectors import FactsCollector
 from core.connection_manager import ConnectionManager
+from core.exceptions import NetworkAutomationError
 from inventory import Inventory
 from monitoring import HighCpuRule, InterfaceDownRule, MonitoringEngine, OspfNeighborLostRule
 from provisioning import ConfigPusher
@@ -19,6 +21,8 @@ from reporting import AppLogger, HtmlReport
 BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = BASE_DIR / "output"
 INVENTORY_FILE = BASE_DIR / "inventory.yaml"
+
+logger = logging.getLogger("netmon")
 
 
 def _selected_devices(args: argparse.Namespace):
@@ -31,7 +35,43 @@ def cmd_inventory_list(args: argparse.Namespace) -> None:
     inventory = Inventory(INVENTORY_FILE).load()
     for record in inventory.filter(group=args.group, role=args.role, tag=args.tag):
         group = record.get("group", "")
-        print(f"{record['name']:<8} {record['host']:<16} {record['device_type']:<10} {group}")
+        tags = ",".join(record.get("tags", []))
+        print(f"{record['name']:<8} {record['host']:<16} {record['device_type']:<18} {group:<8} {tags}")
+
+
+def _record_from_args(args: argparse.Namespace) -> dict:
+    fields = ("host", "port", "device_type", "group", "role", "credentials")
+    record = {f: getattr(args, f) for f in fields if getattr(args, f, None) is not None}
+    if args.tags is not None:
+        record["tags"] = [t.strip() for t in args.tags.split(",") if t.strip()]
+    return record
+
+
+def cmd_inventory_add(args: argparse.Namespace) -> None:
+    inventory = Inventory(INVENTORY_FILE).load()
+    inventory.add({"name": args.name, **_record_from_args(args)})
+    inventory.save()
+    logger.info("inventory: added device %s", args.name)
+    print(f"Added {args.name}.")
+
+
+def cmd_inventory_edit(args: argparse.Namespace) -> None:
+    inventory = Inventory(INVENTORY_FILE).load()
+    changes = _record_from_args(args)
+    if args.new_name:
+        changes["name"] = args.new_name
+    inventory.update(args.name, **changes)
+    inventory.save()
+    logger.info("inventory: updated device %s %s", args.name, changes)
+    print(f"Updated {args.name}.")
+
+
+def cmd_inventory_remove(args: argparse.Namespace) -> None:
+    inventory = Inventory(INVENTORY_FILE).load()
+    inventory.remove(args.name)
+    inventory.save()
+    logger.info("inventory: removed device %s", args.name)
+    print(f"Removed {args.name}.")
 
 
 def cmd_scan(args: argparse.Namespace) -> None:
@@ -111,6 +151,31 @@ def build_parser() -> argparse.ArgumentParser:
     add_filters(inv_list)
     inv_list.set_defaults(func=cmd_inventory_list)
 
+    def add_record_fields(p: argparse.ArgumentParser, required: bool) -> None:
+        p.add_argument("--host", required=required, help="management IP")
+        p.add_argument("--device-type", dest="device_type", required=required,
+                       help="mikrotik_routeros | vyos | cisco_ios")
+        p.add_argument("--port", type=int, help="SSH port (default 22)")
+        p.add_argument("--group")
+        p.add_argument("--role")
+        p.add_argument("--tags", help="comma-separated, e.g. vyos,ospf")
+        p.add_argument("--credentials", help="env prefix for this device's account, e.g. LAB")
+
+    inv_add = inv_sub.add_parser("add", help="add a device")
+    inv_add.add_argument("name")
+    add_record_fields(inv_add, required=True)
+    inv_add.set_defaults(func=cmd_inventory_add)
+
+    inv_edit = inv_sub.add_parser("edit", help="change fields of a device")
+    inv_edit.add_argument("name")
+    inv_edit.add_argument("--new-name", dest="new_name")
+    add_record_fields(inv_edit, required=False)
+    inv_edit.set_defaults(func=cmd_inventory_edit)
+
+    inv_rm = inv_sub.add_parser("remove", help="delete a device")
+    inv_rm.add_argument("name")
+    inv_rm.set_defaults(func=cmd_inventory_remove)
+
     scan = sub.add_parser("scan", help="collect facts, detect anomalies, write reports")
     add_filters(scan)
     scan.add_argument("--cpu-threshold", type=float, default=80.0)
@@ -145,6 +210,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     except NotImplementedError as exc:
         print(f"Not implemented yet: {exc}")
         return 2
+    except NetworkAutomationError as exc:
+        logger.error("%s: %s", type(exc).__name__, exc)
+        print(f"Error: {exc}")
+        return 1
     return 0
 
 
