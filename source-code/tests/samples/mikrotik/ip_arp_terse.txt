@@ -1,0 +1,1 @@
+0 DC address=192.168.100.1 mac-address=00:50:56:C0:00:03 interface=ether1 published=no status=reachable vrf=main

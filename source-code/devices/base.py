@@ -18,6 +18,7 @@ from core.exceptions import (
     DeviceTimeoutError,
 )
 from core.models import DeviceFacts, InterfaceStatus, OspfNeighbor
+from devices.parsing import clean_output
 
 
 class NetworkDevice(ABC):
@@ -170,10 +171,14 @@ class NetworkDevice(ABC):
         self.disconnect()
 
     def send_command(self, command: str) -> str:
-        """Run one show command and return its raw text output."""
+        """Run one show command and return its text output.
+
+        Terminal escape codes (e.g. VyOS sends ``ESC[?2004l``) and carriage
+        returns are removed so every parser receives plain text.
+        """
         if not self.is_connected:
             raise DeviceConnectionError(f"{self._name}: not connected")
-        return self._connection.send_command(command)
+        return clean_output(self._connection.send_command(command))
 
     # ------------------------------------------------------ template methods
     def get_facts(self) -> DeviceFacts:

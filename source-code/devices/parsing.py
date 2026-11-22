@@ -4,7 +4,14 @@ import re
 import shlex
 from typing import Dict, Optional, Tuple
 
+_ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;?]*[A-Za-z]")
 _DURATION_UNITS = {"w": 604800, "d": 86400, "h": 3600, "m": 60, "s": 1}
+
+
+def clean_output(text: str) -> str:
+    """Remove terminal escape codes, carriage returns and trailing spaces."""
+    text = _ANSI_ESCAPE.sub("", text).replace("\r", "")
+    return "\n".join(line.rstrip() for line in text.split("\n")).strip("\n")
 
 
 def duration_to_seconds(text: str) -> Optional[int]:
