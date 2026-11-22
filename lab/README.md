@@ -38,7 +38,7 @@ Chế độ `--demo` thay 4 router thật bằng 4 router giả lập. Router gi
 ```
 cd source-code
 pip install -r requirements.txt
-pytest                              # 81 test, chạy khoảng 1 giây
+pytest                              # 82 test, chạy khoảng 1 giây
 python main.py --demo web           # rồi mở http://127.0.0.1:5000
 ```
 

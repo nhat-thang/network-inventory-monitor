@@ -4,6 +4,8 @@ Hệ thống kiểm kê và giám sát trạng thái mạng đa nhà cung cấp,
 
 Đề tài số 3 – Bài tập lớn môn Lập trình hướng đối tượng, Học viện Công nghệ Bưu chính Viễn thông.
 
+Mã nguồn trên GitHub: https://github.com/nhat-thang/network-inventory-monitor
+
 > **Giảng viên đọc [lab/README.md](lab/README.md) trước.** File này hướng dẫn xem minh chứng, chạy thử toàn bộ chương trình bằng router giả lập (không cần lab), đối chiếu từng yêu cầu của đề với mã nguồn, và dựng lại lab GNS3.
 
 ## Chức năng
@@ -82,7 +84,7 @@ cd source-code
 pytest
 ```
 
-81 test, không cần lab: parser được kiểm tra bằng output thật của router lưu trong `tests/samples/`; lớp dịch vụ và giao diện web được kiểm tra bằng thiết bị giả lập trả về chính các output đó (`tests/fakes.py`).
+82 test, không cần lab: parser được kiểm tra bằng output thật của router lưu trong `tests/samples/`; lớp dịch vụ và giao diện web được kiểm tra bằng thiết bị giả lập trả về chính các output đó (`devices/simulated.py`).
 
 ## Bảo mật
 
