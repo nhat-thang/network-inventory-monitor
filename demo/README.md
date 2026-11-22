@@ -29,7 +29,7 @@ Cảnh báo ở bước 8:
 
 | File | Mô tả |
 |---|---|
-| [report/report_su_co.html](report/report_su_co.html) | Dashboard HTML do lệnh `scan` sinh ra ở bước 8 (tải về rồi mở bằng trình duyệt) |
+| [report/report_su_co.html](report/report_su_co.html) | Dashboard HTML của lần quét ở bước 8 (mở bằng trình duyệt). Sau khi đổi giao diện dashboard, trang được dựng lại từ đúng dữ liệu của lần quét đó (`facts.json` và log lúc 08:43) |
 | [screenshots/dashboard_su_co.png](screenshots/dashboard_su_co.png) | Ảnh chụp dashboard trên |
 | [screenshots/cmd_scan_su_co.png](screenshots/cmd_scan_su_co.png) | Màn hình CMD khi chạy `scan` ở bước 8 |
 | [report/facts.json](report/facts.json), [report/facts.csv](report/facts.csv) | Dữ liệu thu thập ở bước 8 |
