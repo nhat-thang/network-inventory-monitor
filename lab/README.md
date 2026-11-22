@@ -23,7 +23,7 @@ Vòng dữ liệu (OSPF):
 | [bootstrap/](bootstrap/) | Lệnh cấu hình tay ban đầu cho từng router |
 | [configs/](configs/) | Cấu hình đang chạy của 4 router, xuất ngày 22/11/2026 (mật khẩu đã che) |
 
-File image router và file portable project (`.gns3project`) không đưa vào repo vì quá nặng. File portable project được đăng ở mục **Releases** của repo.
+File image router (MikroTik CHR, ISO VyOS) không kèm theo vì quá nặng; tải theo bảng phiên bản bên dưới. File `Nhom1_HeThongKiemKeMang.gns3project` (project GNS3 đã có sẵn cấu hình 4 router) nằm ngay trong thư mục này.
 
 ## Phần mềm
 
@@ -77,7 +77,7 @@ Không dùng card *Microsoft KM-TEST Loopback* như cách cũ: Cloud chạy trê
 
 ### Bước 4. Lấy project
 
-**Cách A — Import portable project (nhanh nhất):** tạo template ở Bước 5 trước (để GNS3 có image), sau đó tải `Nhom1_HeThongKiemKeMang.gns3project` ở mục Releases, chọn **File → Import portable project**, chạy trên **GNS3 VM**. File đã chứa sẵn cấu hình 4 router, bỏ qua Bước 6.
+**Cách A — Import portable project (nhanh nhất):** tạo template ở Bước 5 trước (để GNS3 có image), sau đó chọn **File → Import portable project**, chọn file `Nhom1_HeThongKiemKeMang.gns3project` trong thư mục `lab/`, chạy trên **GNS3 VM**. File đã chứa sẵn cấu hình 4 router, bỏ qua Bước 6.
 
 **Cách B — Dựng từ đầu:** làm Bước 5, mở `topology.gns3` (*File → Open project*), rồi làm Bước 6.
 
