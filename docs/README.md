@@ -1,7 +1,7 @@
 # Tài liệu kiến trúc
 
 - [TaiLieuKienTruc_Nhom1.docx](TaiLieuKienTruc_Nhom1.docx): tài liệu 9 chương (39 trang) theo mục 6.2 của đề.
-  Trước khi nộp cần điền: giảng viên, họ tên và MSSV các thành viên (trang bìa) và bảng phân công, tỷ lệ đóng góp (Bảng 1.1, mục 1.5).
+  Còn thiếu MSSV của Đỗ Ngọc An (trang bìa và Bảng 1.1).
 - `diagrams/`: các sơ đồ dùng trong tài liệu, kèm file nguồn để vẽ lại
   - `architecture` (Graphviz): kiến trúc 4 lớp
   - `class_devices`, `class_monitoring`, `class_services` (Graphviz): biểu đồ lớp
