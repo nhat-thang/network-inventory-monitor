@@ -254,7 +254,7 @@ class NetworkDevice(ABC):
         if not self.is_connected:
             raise DeviceConnectionError(f"{self._name}: not connected")
         try:
-            return self._apply_config(lines)
+            return clean_output(self._apply_config(lines))
         except Exception as exc:  # noqa: BLE001
             raise ConfigPushError(f"{self._name}: {exc}") from exc
 

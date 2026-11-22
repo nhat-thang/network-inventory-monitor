@@ -256,12 +256,16 @@ def test_cisco_routes_lldp_memory():
 def test_vyos_lldp_detail_format():
     from devices import VyOSDevice
     from core.credentials import Credentials
+    from devices.parsing import clean_output
 
     dev = VyOSDevice("VY1", "192.0.2.1", Credentials("u", "p"))
-    text = (Path(__file__).parent / "samples" / "vyos" / "show_lldp_neighbors_detail.txt").read_text()
+    text = clean_output((Path(__file__).parent / "samples" / "vyos" / "show_lldp_neighbors_detail.txt")
+                        .read_text(encoding="utf-8"))  # real output from VY1
     n = dev.parse_lldp(text)
     assert [(x.local_interface, x.neighbor, x.neighbor_port) for x in n] == [
-        ("eth1", "R1-MikroTik", "ether3"), ("eth2", "VY2-VyOS", "0c:a3:25:32:00:02")]
+        ("eth0", "R1-MikroTik", "ether1"), ("eth0", "R2-MikroTik", "ether1"),
+        ("eth0", "VY2-VyOS", "0c:a3:25:32:00:00"), ("eth1", "R1-MikroTik", "ether3"),
+        ("eth2", "VY2-VyOS", "0c:a3:25:32:00:02")]
     assert n[0].platform.startswith("MikroTik RouterOS")
     table = """Device ID                 Local     Proto  Cap   Platform             Port ID
 ---------                 -----     -----  ---   --------             -------
