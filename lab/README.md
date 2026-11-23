@@ -19,7 +19,7 @@ Có ba mức kiểm tra, từ nhanh đến đầy đủ. Hai mức đầu **khô
 ```
 BTL_TDHM_H99_Nhom1/
 ├── README.md           giới thiệu, cài đặt, danh sách lệnh
-├── docs/               tài liệu kiến trúc (.pdf) và các sơ đồ
+├── docs/               tài liệu kiến trúc (.docx) và các sơ đồ
 ├── demo/               minh chứng chạy thật trên lab (mức A)
 ├── source-code/        mã nguồn Python
 └── lab/                README này, topology GNS3, bảng IP, cấu hình ban đầu router
@@ -102,7 +102,7 @@ Sao lưu và áp cấu hình chạy theo cùng cách này. Vì vậy, mọi vi�
 | Đề tài 3: phát hiện bất thường, dashboard cảnh báo | `monitoring/rules.py`, `monitoring/compliance.py` | trang Tổng quan |
 | 4.2 Thiết kế hướng đối tượng | `devices/` (trừu tượng, kế thừa, đa hình), `core/credentials.py` (đóng gói) | Chương 4 tài liệu |
 | 5.1 Giao diện người dùng (điểm cộng) | `web/` | `python main.py web` |
-| 6.2 Tài liệu kiến trúc | `docs/TaiLieuKienTruc_Nhom1.pdf` | |
+| 6.2 Tài liệu kiến trúc | `docs/TaiLieuKienTruc_Nhom1.docx` | |
 
 ## Lab GNS3
 
