@@ -17,10 +17,10 @@ Có ba mức kiểm tra, từ nhanh đến đầy đủ. Hai mức đầu **khô
 ### 1. Bài nộp gồm những gì
 
 ```
-BTL_TDHM_H99_Nhom1/
+BTL_TDHM_H99_Nhom01/
 ├── README.md           giới thiệu, cài đặt, danh sách lệnh
 ├── docs/               tài liệu kiến trúc (.docx) và các sơ đồ
-├── demo/               minh chứng chạy thật trên lab (mức A)
+├── demo/               minh chứng chạy thật trên lab (mức A), chia theo kịch bản 00–06
 ├── source-code/        mã nguồn Python
 └── lab/                README này, topology GNS3, bảng IP, cấu hình ban đầu router
 ```
