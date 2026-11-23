@@ -1,34 +1,31 @@
 # Device inventory for the GNS3 lab (see lab/ip-plan.md).
 # Credentials are NOT stored here; they come from .env.
 devices:
-  - name: R1
-    host: 192.168.100.11
-    port: 22
-    device_type: cisco_ios
-    group: core
-    role: router
-    tags: [cisco, ospf]
-
-  - name: R2
-    host: 192.168.100.12
-    port: 22
-    device_type: cisco_ios
-    group: core
-    role: router
-    tags: [cisco, ospf]
-
-  - name: VY1
-    host: 192.168.100.21
-    port: 22
-    device_type: vyos
-    group: core
-    role: router
-    tags: [vyos, ospf]
-
-  - name: VY2
-    host: 192.168.100.22
-    port: 22
-    device_type: vyos
-    group: core
-    role: router
-    tags: [vyos, ospf]
+- name: R1
+  host: 192.168.100.11
+  port: 22
+  device_type: mikrotik_routeros
+  group: core
+  role: router
+  tags: [mikrotik, ospf]
+- name: R2
+  host: 192.168.100.12
+  port: 22
+  device_type: mikrotik_routeros
+  group: core
+  role: router
+  tags: [mikrotik, ospf]
+- name: VY1
+  host: 192.168.100.21
+  port: 22
+  device_type: vyos
+  group: core
+  role: router
+  tags: [vyos, ospf]
+- name: VY2
+  host: 192.168.100.22
+  port: 22
+  device_type: vyos
+  group: core
+  role: router
+  tags: [vyos, ospf]

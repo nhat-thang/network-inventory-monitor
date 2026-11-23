@@ -45,6 +45,7 @@ class DeviceFacts:
     interfaces: List[InterfaceStatus] = field(default_factory=list)
     ospf_neighbors: List[OspfNeighbor] = field(default_factory=list)
     arp_entries: List[Dict[str, Any]] = field(default_factory=list)
+    config_hash: Optional[str] = None
     collected_at: datetime = field(default_factory=datetime.now)
 
 

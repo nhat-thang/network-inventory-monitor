@@ -1,0 +1,17 @@
+uptime: 1m6s
+                  version: 7.24.6 (long-term)
+               build-time: 2026-10-30 08:24:29
+          minimum-version: 7.1
+              free-memory: 174.9MiB
+             total-memory: 384.0MiB
+                      cpu: QEMU
+                cpu-count: 1
+            cpu-frequency: 3293MHz
+                 cpu-load: 1%
+           free-hdd-space: 69.1MiB
+          total-hdd-space: 89.2MiB
+  write-sect-since-reboot: 384
+         write-sect-total: 384
+        architecture-name: x86_64
+               board-name: CHR QEMU Ubuntu 26.04 PC (i440FX + PIIX, 1996)
+                 platform: MikroTik

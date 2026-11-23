@@ -1,0 +1,20 @@
+Version:          VyOS 2026.11.18-0016-rolling
+Release train:    rolling
+Release flavor:   generic
+
+Built by:         autobuild@vyos.net
+Built on:         Wed 18 Nov 2026 00:17 UTC
+Build UUID:       8219507f-498e-47ae-9e26-adf8d92a2f60
+Build commit ID:
+
+Architecture:     x86_64
+Boot via:         installed image
+System type:      KVM guest
+Secure Boot:      n/a (BIOS)
+
+Hardware vendor:  QEMU
+Hardware model:   Ubuntu 26.04 PC (i440FX + PIIX, 1996)
+Hardware S/N:
+Hardware UUID:    fa34e875-1e73-421b-ac99-9afa6eac45a5
+
+Copyright:        VyOS maintainers and contributors

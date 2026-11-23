@@ -1,0 +1,6 @@
+Uptime: 44s
+
+Load averages:
+1  minute:   70.0%
+5  minutes:  19.0%
+15 minutes:  6.0%

@@ -6,6 +6,7 @@ the dry-run logic for pushing configuration. Each vendor subclass only says
 *which* commands to send and *how* to read their output.
 """
 
+import hashlib
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Sequence
 
@@ -17,6 +18,7 @@ from core.exceptions import (
     DeviceTimeoutError,
 )
 from core.models import DeviceFacts, InterfaceStatus, OspfNeighbor
+from devices.parsing import clean_output
 
 
 class NetworkDevice(ABC):
@@ -169,26 +171,42 @@ class NetworkDevice(ABC):
         self.disconnect()
 
     def send_command(self, command: str) -> str:
-        """Run one show command and return its raw text output."""
+        """Run one show command and return its text output.
+
+        Terminal escape codes (e.g. VyOS sends ``ESC[?2004l``) and carriage
+        returns are removed so every parser receives plain text.
+        """
         if not self.is_connected:
             raise DeviceConnectionError(f"{self._name}: not connected")
-        return self._connection.send_command(command)
+        return clean_output(self._connection.send_command(command))
 
     # ------------------------------------------------------ template methods
     def get_facts(self) -> DeviceFacts:
         """Collect and normalize facts. Same steps for every vendor (template method)."""
         cmd = self.commands
         facts = DeviceFacts(device=self._name, vendor=self.vendor)
-        version = self.parse_version(self.send_command(cmd["version"]))
+        version = self.collect_version()
         facts.hostname = version.get("hostname")
         facts.os_version = version.get("os_version")
         facts.serial = version.get("serial")
         facts.uptime_seconds = version.get("uptime_seconds")
-        facts.interfaces = self.parse_interfaces(self.send_command(cmd["interfaces"]))
+        facts.interfaces = self.collect_interfaces()
         facts.ospf_neighbors = self.parse_ospf_neighbors(self.send_command(cmd["ospf_neighbors"]))
         facts.arp_entries = self.parse_arp(self.send_command(cmd["arp"]))
         facts.cpu_percent = self.parse_cpu(self.send_command(cmd["cpu"]))
+        facts.config_hash = hashlib.sha256(self.backup_config().encode("utf-8")).hexdigest()
         return facts
+
+    # ------------------------------------------------------------ hook methods
+    # Most vendors answer each question with one command. A vendor that needs
+    # several commands for one fact overrides the matching hook below.
+    def collect_version(self) -> Dict[str, Any]:
+        """Hook: run the version command(s) and return the parsed dict."""
+        return self.parse_version(self.send_command(self.commands["version"]))
+
+    def collect_interfaces(self) -> List[InterfaceStatus]:
+        """Hook: run the interface command(s) and return the parsed list."""
+        return self.parse_interfaces(self.send_command(self.commands["interfaces"]))
 
     def backup_config(self) -> str:
         """Return the current running configuration as text."""

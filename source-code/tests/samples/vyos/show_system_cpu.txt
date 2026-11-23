@@ -1,0 +1,5 @@
+CPU socket: 0
+CPU Vendor:       AuthenticAMD
+Model:            QEMU Virtual CPU version 2.5+
+Cores:            1
+Current MHz:      3293.808
