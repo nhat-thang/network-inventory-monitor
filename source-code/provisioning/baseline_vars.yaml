@@ -1,0 +1,4 @@
+# Baseline for every router: LLDP on all interfaces + login banner.
+# Keys: "all" applies to every device; a device name (e.g. R1) overrides it.
+all:
+  banner: Thiet bi thuoc lab Nhom 1 - chi nguoi co tham quyen moi duoc truy cap

@@ -5,6 +5,7 @@
 
 # Runtime output (backups, reports, logs)
 source-code/output/
+source-code/output_demo/
 
 # Python
 __pycache__/

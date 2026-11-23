@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ record.name }} <span class="muted" style="font-size:14px">{{ record.host }} · {{ record.device_type }}</span></h1>
+{% if not f %}
+<p class="muted">Chưa có dữ liệu. Hãy quét thiết bị này ở trang Thiết bị.</p>
+{% else %}
+<table>
+  <tbody>
+  <tr><th>Hostname</th><td>{{ f.hostname or "-" }}</td><th>Phiên bản</th><td>{{ f.os_version or "-" }}</td></tr>
+  <tr><th>Serial / ID</th><td class="mono">{{ f.serial or "-" }}</td><th>Uptime</th><td>{{ f.uptime_seconds | uptime }}</td></tr>
+  <tr><th>CPU</th><td>{{ "%.0f%%" % f.cpu_percent if f.cpu_percent is not none else "-" }}</td>
+      <th>RAM</th><td>{% if f.memory_percent is not none %}{{ "%.0f" % f.memory_percent }}% của {{ "%.0f" % f.memory_total_mb }} MB{% else %}-{% endif %}</td></tr>
+  <tr><th>Thu thập lúc</th><td>{{ f.collected_at.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+      <th>Mã băm cấu hình</th><td class="mono">{{ (f.config_hash or "-")[:16] }}</td></tr>
+  </tbody>
+</table>
+<div class="cols">
+  <div>
+    <h2>Cổng</h2>
+    <table><thead><tr><th>Cổng</th><th>IP</th><th>Admin</th><th>Link</th></tr></thead><tbody>
+    {% for i in f.interfaces %}
+    <tr><td class="mono">{{ i.name }}</td><td>{{ i.ip_address or "-" }}</td><td>{{ "bật" if i.admin_up else "tắt" }}</td>
+        <td>{% if i.oper_up %}<span class="badge good">UP</span>{% elif not i.admin_up %}<span class="badge off">TẮT</span>
+            {% elif i.ip_address %}<span class="badge critical">DOWN</span>{% else %}<span class="muted">không dùng</span>{% endif %}</td></tr>
+    {% endfor %}</tbody></table>
+    <h2>OSPF neighbor</h2>
+    {% if f.ospf_neighbors %}
+    <table><thead><tr><th>Router ID</th><th>Địa chỉ</th><th>Cổng</th><th>Trạng thái</th></tr></thead><tbody>
+    {% for n in f.ospf_neighbors %}<tr><td>{{ n.neighbor_id }}</td><td>{{ n.address }}</td><td class="mono">{{ n.interface }}</td>
+      <td><span class="badge {{ 'good' if n.state.lower().startswith('full') else 'warning' }}">{{ n.state }}</span></td></tr>{% endfor %}
+    </tbody></table>{% else %}<p class="muted">Không có.</p>{% endif %}
+    <h2>Láng giềng LLDP</h2>
+    {% if f.lldp_neighbors %}
+    <table><thead><tr><th>Cổng</th><th>Láng giềng</th><th>Cổng láng giềng</th><th>Nền tảng</th></tr></thead><tbody>
+    {% for n in f.lldp_neighbors %}<tr><td class="mono">{{ n.local_interface }}</td><td>{{ n.neighbor }}</td>
+      <td class="mono">{{ n.neighbor_port or "-" }}</td><td>{{ n.platform or "-" }}</td></tr>{% endfor %}
+    </tbody></table>{% else %}<p class="muted">Không có.</p>{% endif %}
+  </div>
+  <div>
+    <h2>Tuân thủ cấu hình{% if f.compliance_percent is not none %} ({{ "%.0f" % f.compliance_percent }}%){% endif %}</h2>
+    {% if f.compliance %}
+    <table><thead><tr><th>Tiêu chí</th><th>Kết quả</th><th>Ghi chú</th></tr></thead><tbody>
+    {% for c in f.compliance %}<tr><td>{{ c.description }}</td>
+      <td>{% if c.passed %}<span class="badge good">ĐẠT</span>{% else %}<span class="badge warning">KHÔNG ĐẠT</span>{% endif %}</td>
+      <td>{{ c.detail }}</td></tr>{% endfor %}
+    </tbody></table>{% else %}<p class="muted">Chưa kiểm tra.</p>{% endif %}
+    <h2>Bảng định tuyến</h2>
+    <table><thead><tr><th>Prefix</th><th>Giao thức</th><th>Next hop</th><th>Cổng</th></tr></thead><tbody>
+    {% for r in f.routes %}<tr><td>{{ r.prefix }}</td><td>{{ r.protocol }}</td><td>{{ r.next_hop or "-" }}</td>
+      <td class="mono">{{ r.interface or "-" }}</td></tr>{% endfor %}
+    </tbody></table>
+    <h2>Bảng ARP</h2>
+    <table><thead><tr><th>IP</th><th>MAC</th><th>Cổng</th></tr></thead><tbody>
+    {% for e in f.arp_entries %}<tr><td>{{ e.ip }}</td><td class="mono">{{ e.mac }}</td><td class="mono">{{ e.interface }}</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+</div>
+{% endif %}
+<h2>Bản sao lưu</h2>
+{% if backups %}
+<table><thead><tr><th>File</th><th></th></tr></thead><tbody>
+{% for b in backups %}<tr><td class="mono">{{ b.name }}</td>
+  <td><a href="{{ url_for('backup_view', device=record.name, file_name=b.name) }}">Xem</a> ·
+      <a href="{{ url_for('backup_view', device=record.name, file_name=b.name, download=1) }}">Tải về</a></td></tr>{% endfor %}
+</tbody></table>
+{% else %}<p class="muted">Chưa có.</p>{% endif %}
+{% endblock %}

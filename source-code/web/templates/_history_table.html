@@ -1,0 +1,15 @@
+{% set rows = d.history if d is defined else entries %}
+{% if rows %}
+<table>
+  <thead><tr><th>Thời gian</th><th>Người thực hiện</th><th>Nguồn</th><th>Thao tác</th><th>Thiết bị</th>
+    <th>Thành công</th><th>Lỗi</th><th>Chi tiết</th></tr></thead>
+  <tbody>
+  {% for e in rows %}
+  <tr><td class="nowrap">{{ e.time.replace("T", " ") }}</td><td>{{ e.user }}</td><td>{{ e.source }}</td>
+      <td>{{ e.action }}</td><td>{{ e.devices | join(", ") }}</td><td class="r">{{ e.ok }}</td>
+      <td class="r">{% if e.failed %}<span class="badge critical">{{ e.failed }}</span>{% else %}0{% endif %}</td>
+      <td>{{ e.detail }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}<p class="muted">Chưa có thao tác nào.</p>{% endif %}

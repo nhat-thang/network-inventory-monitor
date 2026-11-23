@@ -1,0 +1,32 @@
+digraph G {
+  graph [rankdir=BT, fontname="DejaVu Sans", nodesep=0.35, ranksep=0.55, bgcolor="white", pad=0.15];
+  node  [shape=plaintext, fontname="DejaVu Sans", fontsize=9.5];
+  edge  [fontname="DejaVu Sans", fontsize=8.5, color="#4b5263"];
+  NS [label=<<table border="1" cellborder="0" cellspacing="0" cellpadding="3" bgcolor="#f4f6fa" color="#4b5263">
+   <tr><td bgcolor="#dfe6f3"><b>NetworkService</b></td></tr>
+   <tr><td align="left" balign="left">- _base, _out, _workers, _source<br/>- _backups : BackupManager<br/>- _history : HistoryLog</td></tr>
+   <tr><td align="left" balign="left">+ inventory(), select(names, group, role, tag)<br/>+ scan(records, on_result) : ScanResult<br/>+ backup(records, on_result)<br/>+ diff(device, old, new), rollback(device, file)<br/>+ templates(), render(template, records)<br/>+ deploy(template, records, dry_run, on_result)<br/>+ reports(), last_scan(), last_facts(), dashboard()</td></tr></table>>];
+  SR [label=<<table border="1" cellborder="0" cellspacing="0" cellpadding="3" bgcolor="#fbf7e8" color="#4b5263">
+   <tr><td bgcolor="#f3ead0"><i>«dataclass»</i><br/><b>ScanResult</b></td></tr>
+   <tr><td align="left" balign="left">facts, failures, alerts<br/>report_path, finished_at</td></tr></table>>];
+  CLI [label=<<table border="1" cellborder="0" cellpadding="4" bgcolor="#e3ecfb" color="#4b5263"><tr><td><b>main.py</b><br/>cmd_scan(), cmd_backup(), cmd_deploy()...</td></tr></table>>];
+  APP [label=<<table border="1" cellborder="0" cellpadding="4" bgcolor="#e3ecfb" color="#4b5263"><tr><td><b>web/app.py</b><br/>create_app(): các route Flask</td></tr></table>>];
+  TM [label=<<table border="1" cellborder="0" cellspacing="0" cellpadding="3" bgcolor="#f4f6fa" color="#4b5263">
+   <tr><td bgcolor="#dfe6f3"><b>TaskManager</b></td></tr>
+   <tr><td align="left" balign="left">+ start(action, devices, work) : WebTask<br/>+ follow(task) : các sự kiện (SSE)</td></tr></table>>];
+  WT [label=<<table border="1" cellborder="0" cellspacing="0" cellpadding="3" bgcolor="#fbf7e8" color="#4b5263">
+   <tr><td bgcolor="#f3ead0"><i>«dataclass»</i><br/><b>WebTask</b></td></tr>
+   <tr><td align="left" balign="left">id, action, devices, events, finished</td></tr></table>>];
+  PR [label=<<table border="1" cellborder="0" cellspacing="0" cellpadding="3" bgcolor="#f4f6fa" color="#4b5263">
+   <tr><td bgcolor="#dfe6f3"><b>PeriodicRunner</b></td></tr>
+   <tr><td align="left" balign="left">+ run(), stop(), runs</td></tr></table>>];
+  LOW [label=<<table border="1" cellborder="0" cellpadding="4" bgcolor="#f4f6fa" color="#4b5263"><tr><td>Inventory · ConnectionManager · MonitoringEngine · ComplianceChecker<br/>BackupManager · ConfigPusher · MarkdownReport · HistoryLog</td></tr></table>>];
+  CLI -> NS [style=dashed, arrowhead=vee, label=" gọi"];
+  APP -> NS [style=dashed, arrowhead=vee, label=" gọi"];
+  APP -> TM [style=dashed, arrowhead=vee];
+  TM -> WT [dir=back, arrowtail=diamond, label=" 0..*"];
+  CLI -> PR [style=dashed, arrowhead=vee, label=" backup --every"];
+  NS -> SR [style=dashed, arrowhead=vee, label=" trả về"];
+  LOW -> NS [dir=both, arrowtail=none, arrowhead=odiamond, label=" dùng"];
+  {rank=same; CLI APP}
+}

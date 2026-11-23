@@ -1,6 +1,7 @@
-"""Logging (Singleton) and report generation."""
+"""Logging (Singleton), operation history and Markdown reports."""
 
-from reporting.html_report import HtmlReport
+from reporting.markdown_report import MarkdownReport
+from reporting.history import HistoryLog
 from reporting.logger import AppLogger
 
-__all__ = ["AppLogger", "HtmlReport"]
+__all__ = ["AppLogger", "MarkdownReport", "HistoryLog"]

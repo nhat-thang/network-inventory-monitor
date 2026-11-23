@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ device }} · <span class="mono">{{ path.name }}</span></h1>
+<div class="toolbar">
+  <a class="btn secondary" href="{{ url_for('backup_view', device=device, file_name=path.name, download=1) }}">Tải về</a>
+  <form method="post" action="{{ url_for('backup_rollback', device=device, file_name=path.name) }}"
+        onsubmit="return confirm('Khôi phục {{ device }} về bản {{ path.name }}?');" style="margin:0">
+    <button class="danger">Khôi phục (rollback) về bản này</button>
+  </form>
+  <a href="{{ url_for('backups') }}">Quay lại</a>
+</div>
+<pre>{{ text }}</pre>
+{% endblock %}

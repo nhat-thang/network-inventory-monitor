@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Báo cáo quét (Markdown)</h1>
+{% if reports %}
+<table><thead><tr><th>File</th><th>Kích thước</th><th></th></tr></thead><tbody>
+{% for r in reports %}<tr><td class="mono">{{ r.name }}</td><td class="r">{{ (r.stat().st_size / 1024) | round(1) }} KB</td>
+  <td><a href="{{ url_for('download_report', name=r.name) }}">Xem</a> ·
+      <a href="{{ url_for('download_report', name=r.name, download=1) }}">Tải về</a></td></tr>{% endfor %}
+</tbody></table>
+{% else %}<p class="muted">Chưa có báo cáo. Mỗi lần quét sẽ sinh một file .md.</p>{% endif %}
+{% endblock %}

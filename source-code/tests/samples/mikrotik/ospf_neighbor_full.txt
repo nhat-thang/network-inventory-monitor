@@ -1,0 +1,2 @@
+0 D instance=default-v2 area=backbone-v2 interface=ether3 address=10.0.13.2 priority=1 router-id=3.3.3.3 dr=10.0.13.1 bdr=10.0.13.2 state=Full state-changes=6 adjacency=52m59s timeout=31s
+1 D instance=default-v2 area=backbone-v2 interface=ether2 address=10.0.12.2 priority=128 router-id=2.2.2.2 dr=10.0.12.2 bdr=10.0.12.1 state=Full state-changes=6 adjacency=46m15s timeout=36s

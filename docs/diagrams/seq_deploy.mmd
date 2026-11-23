@@ -1,0 +1,32 @@
+sequenceDiagram
+    autonumber
+    actor U as Người dùng
+    participant M as main.py
+    participant S as NetworkService
+    participant P as ConfigPusher
+    participant B as BackupManager
+    participant D as NetworkDevice
+    U->>M: python main.py deploy baseline [--dry-run]
+    M->>S: render / deploy(template, records)
+    S->>P: render(device, biến all + biến riêng)
+    P-->>S: các dòng cấu hình (Jinja2, đúng cú pháp từng hãng)
+    alt --dry-run
+        S-->>U: in cấu hình, không kết nối thiết bị
+    else áp thật, song song qua ConnectionManager
+        S->>D: connect()
+        S->>P: deploy(device, lines)
+        P->>B: backup(device)
+        B->>D: backup_config()
+        B-->>P: file sao lưu có thời gian
+        P->>D: push_config(lines)
+        alt thành công
+            D-->>P: output
+            P-->>S: "N dòng đã áp"
+        else ConfigPushError
+            P->>B: rollback(device, file vừa sao lưu)
+            B->>D: rollback_commands(hiện tại, bản lưu)
+            B->>D: push_config(lệnh khôi phục)
+            P-->>S: lỗi "đã rollback"
+        end
+        S-->>M: TaskResult cho từng thiết bị
+    end

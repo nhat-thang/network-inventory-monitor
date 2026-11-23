@@ -3,7 +3,7 @@
 import re
 from typing import Any, Dict, List, Optional
 
-from core.models import InterfaceStatus, OspfNeighbor
+from core.models import InterfaceStatus, LldpNeighbor, OspfNeighbor, RouteEntry
 from devices.base import NetworkDevice
 from devices.factory import DeviceFactory
 from devices.parsing import duration_to_seconds, key_value_block
@@ -36,8 +36,11 @@ class VyOSDevice(NetworkDevice):
             "uptime": "show system uptime",
             "interfaces": "show interfaces",
             "ospf_neighbors": "show ip ospf neighbor",
+            "routes": "show ip route",
+            "lldp": "show lldp neighbors detail",
             "arp": "show arp",
             "cpu": "show system uptime",
+            "memory": "show system memory",
             "running_config": "show configuration commands",
         }
 
@@ -114,6 +117,87 @@ class VyOSDevice(NetworkDevice):
                 )
             )
         return result
+
+    _ROUTE_CODES = {"K": "kernel", "C": "connected", "L": "local", "S": "static", "O": "ospf",
+                    "B": "bgp", "R": "rip", "I": "isis"}
+    _ROUTE_LINE = re.compile(r"^([A-Za-z])[>*=q ]*\s+(\d+(?:\.\d+){3}/\d+)\s+(.*)$")
+
+    def parse_routes(self, output: str) -> List[RouteEntry]:
+        """Parse FRR ``show ip route`` (first line of each prefix; ECMP lines are skipped)."""
+        result = []
+        for line in output.splitlines():
+            match = self._ROUTE_LINE.match(line)
+            if not match:
+                continue
+            code, prefix, rest = match.groups()
+            via = re.search(r"via (\d+(?:\.\d+){3})", rest)
+            iface = re.search(r"(?:connected|\d), ([\w.@-]+)", rest)
+            result.append(RouteEntry(
+                prefix=prefix,
+                protocol=self._ROUTE_CODES.get(code, "other"),
+                next_hop=via.group(1) if via else None,
+                interface=iface.group(1) if iface else None,
+            ))
+        return result
+
+    def parse_lldp(self, output: str) -> List[LldpNeighbor]:
+        """Parse LLDP neighbours.
+
+        Handles the lldpcli detail format (``Interface: eth1, via: LLDP`` blocks
+        with ``SysName``/``PortID``/``SysDescr``) and, as a fallback, the
+        summary table whose header is ``Device ID ... Port ID``.
+        """
+        if re.search(r"^\s*Interface:", output, re.MULTILINE):
+            return self._parse_lldp_detail(output)
+        return self._parse_lldp_table(output)
+
+    @staticmethod
+    def _parse_lldp_detail(output: str) -> List[LldpNeighbor]:
+        result = []
+        for block in re.split(r"^\s*Interface:\s*", output, flags=re.MULTILINE)[1:]:
+            local = block.split(",", 1)[0].strip()
+            name = re.search(r"SysName:\s*(.+)", block)
+            port = re.search(r"PortID:\s*(?:ifname|local|mac|ifalias)?\s*(.+)", block)
+            descr = re.search(r"SysDescr:\s*(.+)", block)
+            if not name:
+                continue
+            result.append(LldpNeighbor(local_interface=local, neighbor=name.group(1).strip(),
+                                       neighbor_port=port.group(1).strip() if port else None,
+                                       platform=descr.group(1).strip() if descr else None))
+        return result
+
+    @staticmethod
+    def _parse_lldp_table(output: str) -> List[LldpNeighbor]:
+        lines = output.splitlines()
+        header = next((i for i, l in enumerate(lines) if "Device ID" in l and "Port" in l), None)
+        if header is None:
+            return []
+        head = lines[header]
+        titles = ["Device ID", "Local", "Proto", "Cap", "Platform", "Port"]
+        found = [(t, head.find(t)) for t in titles if head.find(t) >= 0]
+        found.sort(key=lambda x: x[1])
+        starts = [pos for _, pos in found]
+        names = [t for t, _ in found]
+        result = []
+        for line in lines[header + 1:]:
+            if not line.strip() or set(line.strip()) <= {"-", " "}:
+                continue
+            cols = dict(zip(names, (line[a:b].strip() for a, b in zip(starts, starts[1:] + [None]))))
+            if not cols.get("Device ID"):
+                continue
+            result.append(LldpNeighbor(local_interface=cols.get("Local", ""), neighbor=cols["Device ID"],
+                                       neighbor_port=cols.get("Port") or None, platform=cols.get("Platform") or None))
+        return result
+
+    def parse_memory(self, output: str) -> Dict[str, Optional[float]]:
+        """``show system memory``: ``Total: 974.73 MB`` / ``Used: 514.25 MB``."""
+        total = re.search(r"Total:\s*([\d.]+)\s*MB", output)
+        used = re.search(r"Used:\s*([\d.]+)\s*MB", output)
+        if not total:
+            return {"total_mb": None, "used_percent": None}
+        total_mb = float(total.group(1))
+        percent = round(float(used.group(1)) / total_mb * 100, 1) if used and total_mb else None
+        return {"total_mb": total_mb, "used_percent": percent}
 
     def parse_arp(self, output: str) -> List[Dict[str, Any]]:
         """Parse ``show arp`` (``Address  Interface  Link layer address  State``)."""

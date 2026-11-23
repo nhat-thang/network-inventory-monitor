@@ -3,7 +3,7 @@
 import re
 from typing import Any, Dict, List, Optional, Tuple
 
-from core.models import InterfaceStatus, OspfNeighbor
+from core.models import InterfaceStatus, LldpNeighbor, OspfNeighbor, RouteEntry
 from devices.base import NetworkDevice
 from devices.factory import DeviceFactory
 from devices.parsing import duration_to_seconds, key_value_block, terse_line
@@ -34,8 +34,11 @@ class MikroTikDevice(NetworkDevice):
             "interfaces": "/interface print terse without-paging",
             "ip_addresses": "/ip address print terse without-paging",
             "ospf_neighbors": "/routing ospf neighbor print terse without-paging",
+            "routes": "/ip route print terse without-paging",
+            "lldp": "/ip neighbor print terse without-paging",
             "arp": "/ip arp print terse without-paging",
             "cpu": "/system resource print",
+            "memory": "/system resource print",
             "running_config": "/export",
         }
 
@@ -110,6 +113,58 @@ class MikroTikDevice(NetworkDevice):
                 )
             )
         return result
+
+    _ROUTE_PROTOCOLS = {"c": "connected", "s": "static", "o": "ospf", "b": "bgp", "r": "rip",
+                        "d": "dhcp", "v": "vpn", "m": "modem"}
+
+    def parse_routes(self, output: str) -> List[RouteEntry]:
+        """Parse ``/ip route print terse``; protocol comes from the lowercase flag (c, s, o, b...)."""
+        result = []
+        for line in output.splitlines():
+            flags, fields = terse_line(line)
+            if "dst-address" not in fields or "X" in flags:
+                continue
+            protocol = next((self._ROUTE_PROTOCOLS[f] for f in flags if f in self._ROUTE_PROTOCOLS), "other")
+            gateway = fields.get("gateway", "")
+            hop, _, iface = gateway.partition("%")
+            is_ip = bool(re.fullmatch(r"\d+(\.\d+){3}", hop))
+            result.append(RouteEntry(
+                prefix=fields["dst-address"],
+                protocol=protocol,
+                next_hop=hop if is_ip else None,
+                interface=iface or (None if is_ip else hop or None),
+            ))
+        return result
+
+    def parse_lldp(self, output: str) -> List[LldpNeighbor]:
+        """Parse ``/ip neighbor print terse`` (neighbors found by LLDP, CDP or MNDP)."""
+        result = []
+        for line in output.splitlines():
+            _, fields = terse_line(line)
+            if "interface" not in fields or not fields.get("identity"):
+                continue
+            result.append(LldpNeighbor(
+                local_interface=fields["interface"],
+                neighbor=fields["identity"],
+                neighbor_port=fields.get("interface-name"),
+                platform=fields.get("platform"),
+            ))
+        return result
+
+    @staticmethod
+    def _to_mb(text: str) -> Optional[float]:
+        match = re.match(r"([\d.]+)\s*(KiB|MiB|GiB)", text or "")
+        if not match:
+            return None
+        return float(match.group(1)) * {"KiB": 1 / 1024, "MiB": 1, "GiB": 1024}[match.group(2)]
+
+    def parse_memory(self, output: str) -> Dict[str, Optional[float]]:
+        """``free-memory`` / ``total-memory`` from ``/system resource print``."""
+        data = key_value_block(output)
+        total, free = self._to_mb(data.get("total-memory", "")), self._to_mb(data.get("free-memory", ""))
+        if not total or free is None:
+            return {"total_mb": total, "used_percent": None}
+        return {"total_mb": round(total, 1), "used_percent": round((total - free) / total * 100, 1)}
 
     def parse_arp(self, output: str) -> List[Dict[str, Any]]:
         """Parse ``/ip arp print terse``; entries without a MAC are skipped."""

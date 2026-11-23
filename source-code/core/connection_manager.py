@@ -6,7 +6,7 @@ stops the tasks running on the other devices.
 
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Callable, Iterable, List, TypeVar
+from typing import Callable, Iterable, List, Optional, TypeVar
 
 from core.models import TaskResult
 from devices.base import NetworkDevice
@@ -26,9 +26,12 @@ class ConnectionManager:
         self,
         devices: Iterable[NetworkDevice],
         task: Callable[[NetworkDevice], T],
+        on_result: Optional[Callable[[TaskResult], None]] = None,
     ) -> List[TaskResult]:
         """Connect to each device, run ``task(device)``, then disconnect.
 
+        ``on_result`` (optional) is called with each ``TaskResult`` as soon as
+        that device finishes, so a caller (CLI or web UI) can show progress.
         Returns one ``TaskResult`` per device, in completion order.
         """
         devices = list(devices)
@@ -36,7 +39,10 @@ class ConnectionManager:
         with ThreadPoolExecutor(max_workers=self._max_workers) as pool:
             futures = {pool.submit(self._run_one, dev, task): dev for dev in devices}
             for future in as_completed(futures):
-                results.append(future.result())
+                result = future.result()
+                results.append(result)
+                if on_result is not None:
+                    on_result(result)
         return results
 
     @staticmethod

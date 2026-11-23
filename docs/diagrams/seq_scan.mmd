@@ -1,0 +1,31 @@
+sequenceDiagram
+    autonumber
+    actor U as Người dùng
+    participant B as Trình duyệt
+    participant A as web/app.py (Flask)
+    participant T as TaskManager
+    participant S as NetworkService
+    participant CM as ConnectionManager
+    participant D as NetworkDevice (mỗi router)
+    participant E as MonitoringEngine + ComplianceChecker
+    participant R as MarkdownReport + HistoryLog
+    U->>B: chọn thiết bị, bấm "Quét"
+    B->>A: POST /tasks (action=scan, device=...)
+    A->>T: start("scan", devices, work)
+    T-->>A: WebTask #id (luồng nền)
+    A-->>B: chuyển tới /tasks/id
+    B->>A: GET /tasks/id/events (SSE)
+    T->>S: scan(records, on_result)
+    S->>CM: run(devices, collect, on_result)
+    par mỗi thiết bị một luồng
+        CM->>D: connect() SSH, get_facts()
+        D-->>CM: DeviceFacts + cấu hình đang chạy
+        CM->>E: kiểm tra tuân thủ trên cấu hình
+        CM-->>T: on_result(TaskResult)
+        T-->>B: sự kiện "device": XONG / LỖI
+    end
+    S->>E: evaluate(facts, failures) so với snapshot cũ
+    E-->>S: List[Alert]
+    S->>R: render report_*.md, ghi lịch sử
+    S-->>T: ScanResult
+    T-->>B: sự kiện "done": số online, cảnh báo, link báo cáo
