@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Báo cáo giám sát mạng</title>
+<style>
+  body { margin: 0; background: #f0f2f5; color: #222; font-family: Arial, Helvetica, sans-serif; font-size: 14px; }
+  .topbar { background: #2c3e50; color: #fff; padding: 12px 24px; }
+  .topbar h1 { font-size: 18px; margin: 0; font-weight: bold; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px 24px 40px; }
+  h2 { font-size: 16px; margin: 24px 0 8px; padding-bottom: 4px; border-bottom: 2px solid #2c3e50; }
+  .summary { display: flex; gap: 12px; flex-wrap: wrap; }
+  .box { flex: 1; min-width: 180px; background: #e9ecef; border: 1px solid #ced4da; padding: 10px 14px; }
+  .box.ok { background: #d4edda; border-color: #b7dfc0; } .box.crit { background: #f8d7da; border-color: #f1b8bd; }
+  .box.warn { background: #fff3cd; border-color: #f5e1a4; } .box.info { background: #d1ecf1; border-color: #abdde5; }
+  .box .num { font-size: 26px; font-weight: bold; }
+  .box .lbl { color: #444; font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; background: #fff; }
+  th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; vertical-align: middle; }
+  th { background: #e9ecef; font-weight: bold; white-space: nowrap; }
+  tbody tr:nth-child(even) { background: #f8f9fa; }
+  td.r { text-align: right; } .nowrap { white-space: nowrap; }
+  .mono { font-family: Consolas, "Courier New", monospace; font-size: 13px; }
+  .badge { display: inline-block; padding: 2px 6px; border-radius: 2px; font-size: 12px; font-weight: bold; color: #fff; white-space: nowrap; }
+  .badge.good { background: #28a745; } .badge.warning { background: #ffc107; color: #222; }
+  .badge.critical { background: #dc3545; } .badge.info { background: #17a2b8; } .badge.off { background: #6c757d; }
+  .cpu { display: inline-block; width: 80px; height: 10px; border: 1px solid #999; background: #fff; vertical-align: middle; margin-right: 6px; }
+  .cpu span { display: block; height: 100%; background: #5b9bd5; }
+  .cpu span.warning { background: #ffc107; } .cpu span.critical { background: #dc3545; }
+  .empty { background: #fff; border: 1px solid #ccc; padding: 12px; }
+  details { background: #fff; border: 1px solid #ccc; margin-bottom: 8px; }
+  summary { cursor: pointer; padding: 8px 12px; font-weight: bold; background: #f8f9fa; }
+  .detail { display: flex; gap: 16px; flex-wrap: wrap; padding: 12px; }
+  .detail > div { flex: 1; min-width: 320px; }
+  .detail h3 { font-size: 14px; margin: 4px 0 6px; }
+  .muted { color: #777; }
+</style>
+</head>
+<body>
+{% set labels = {"good": "BÌNH THƯỜNG", "warning": "CẢNH BÁO", "critical": "NGHIÊM TRỌNG", "info": "THÔNG TIN"} %}
+<div class="topbar">
+  <h1>Báo cáo kiểm kê và giám sát trạng thái mạng</h1>
+</div>
+
+<div class="container">
+<div class="summary">
+  <div class="box {{ 'crit' if offline else 'ok' }}"><div class="num">{{ online }}/{{ total }}</div><div class="lbl">Thiết bị trực tuyến ({{ offline }} mất kết nối)</div></div>
+  <div class="box crit"><div class="num">{{ critical }}</div><div class="lbl">Cảnh báo nghiêm trọng</div></div>
+  <div class="box warn"><div class="num">{{ warning }}</div><div class="lbl">Cảnh báo</div></div>
+  <div class="box info"><div class="num">{{ info }}</div><div class="lbl">Thông tin</div></div>
+  <div class="box"><div class="num">{{ interfaces_alerted }}</div><div class="lbl">Cổng có IP bị mất kết nối / {{ interfaces_total }} cổng</div></div>
+</div>
+
+<h2>Danh sách cảnh báo</h2>
+{% if alerts %}
+<table>
+  <thead><tr><th>Mức độ</th><th>Thiết bị</th><th>Luật</th><th>Nội dung</th><th>Thời gian</th></tr></thead>
+  <tbody>
+  {% for a in alerts %}
+    <tr><td><span class="badge {{ a.severity }}">{{ labels[a.severity] }}</span></td><td><b>{{ a.device }}</b></td>
+        <td class="mono">{{ a.rule }}</td><td>{{ a.message }}</td><td class="nowrap">{{ a.timestamp.strftime("%H:%M:%S") }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty"><span class="badge good">OK</span> Không phát hiện bất thường</div>
+{% endif %}
+
+<h2>Thiết bị</h2>
+<table>
+  <thead><tr><th>Trạng thái</th><th>Thiết bị</th><th>Hãng</th><th>Phiên bản</th><th>Hostname</th>
+    <th>Uptime</th><th>CPU</th><th>Cổng up</th><th>OSPF</th><th>Serial / ID</th></tr></thead>
+  <tbody>
+  {% for d in devices %}
+    {% if d.online %}{% set f = d.facts %}
+    <tr>
+      <td><span class="badge {{ d.status }}">{{ labels[d.status] }}</span></td>
+      <td><b>{{ f.device }}</b></td>
+      <td>{{ f.vendor }}</td>
+      <td>{{ f.os_version or "-" }}</td>
+      <td class="nowrap">{{ f.hostname or "-" }}</td>
+      <td class="r nowrap">{{ f.uptime_seconds | uptime }}</td>
+      <td class="nowrap">
+        {% if f.cpu_percent is not none %}
+        {% set level = "critical" if f.cpu_percent >= 95 else ("warning" if f.cpu_percent >= cpu_threshold else "") %}
+        <span class="cpu"><span class="{{ level }}" style="width: {{ [f.cpu_percent, 100] | min }}%"></span></span>{{ "%.0f" % f.cpu_percent }}%
+        {% else %}-{% endif %}
+      </td>
+      <td class="r">{{ d.interfaces_up }}/{{ f.interfaces | length }}</td>
+      <td class="r">{{ d.ospf_full }}</td>
+      <td class="mono">{{ f.serial or "-" }}</td>
+    </tr>
+    {% else %}
+    <tr>
+      <td><span class="badge critical">MẤT KẾT NỐI</span></td>
+      <td><b>{{ d.name }}</b></td>
+      <td colspan="8" class="muted">{{ d.error }}</td>
+    </tr>
+    {% endif %}
+  {% endfor %}
+  </tbody>
+</table>
+
+<h2>Chi tiết từng thiết bị</h2>
+{% for d in devices if d.online %}{% set f = d.facts %}
+<details>
+  <summary>{{ f.device }} ({{ f.hostname or "-" }}) - {{ f.interfaces | length }} cổng, {{ f.ospf_neighbors | length }} OSPF neighbor, {{ f.arp_entries | length }} ARP</summary>
+  <div class="detail">
+    <div>
+      <h3>Cổng mạng</h3>
+      <table>
+        <thead><tr><th>Cổng</th><th>Địa chỉ IP</th><th>Admin</th><th>Link</th></tr></thead>
+        <tbody>
+        {% for i in f.interfaces %}
+          <tr><td class="mono">{{ i.name }}</td><td>{{ i.ip_address or "-" }}</td>
+              <td>{{ "bật" if i.admin_up else "tắt" }}</td>
+              <td>{% if i.oper_up %}<span class="badge good">UP</span>{% elif not i.admin_up %}<span class="badge off">TẮT</span>{% elif i.ip_address %}<span class="badge critical">DOWN</span>{% else %}<span class="muted">không dùng</span>{% endif %}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3>OSPF neighbor</h3>
+      {% if f.ospf_neighbors %}
+      <table>
+        <thead><tr><th>Router ID</th><th>Địa chỉ</th><th>Cổng</th><th>Trạng thái</th></tr></thead>
+        <tbody>
+        {% for n in f.ospf_neighbors %}
+          <tr><td>{{ n.neighbor_id }}</td><td>{{ n.address }}</td><td class="mono">{{ n.interface }}</td>
+              <td><span class="badge {{ 'good' if n.state.lower().startswith('full') else 'warning' }}">{{ n.state }}</span></td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}<p class="muted">Chưa có neighbor.</p>{% endif %}
+      <h3>Bảng ARP</h3>
+      {% if f.arp_entries %}
+      <table>
+        <thead><tr><th>IP</th><th>MAC</th><th>Cổng</th></tr></thead>
+        <tbody>
+        {% for e in f.arp_entries %}
+          <tr><td>{{ e.ip }}</td><td class="mono">{{ e.mac }}</td><td class="mono">{{ e.interface }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}<p class="muted">Trống.</p>{% endif %}
+      <p class="muted">Mã băm cấu hình: <span class="mono">{{ (f.config_hash or "-")[:16] }}</span> - thu thập lúc {{ f.collected_at.strftime("%H:%M:%S") }}</p>
+    </div>
+  </div>
+</details>
+{% endfor %}
+</div>
+</body>
+</html>

@@ -98,7 +98,9 @@ def cmd_scan(args: argparse.Namespace) -> None:
     engine.save_snapshot(facts)
     FactsCollector.to_json(facts, OUTPUT_DIR / "facts.json")
     FactsCollector.to_csv(facts, OUTPUT_DIR / "facts.csv")
-    report = HtmlReport().render(facts, failures, alerts, OUTPUT_DIR / "report.html")
+    report = HtmlReport(cpu_threshold=args.cpu_threshold).render(
+        facts, failures, alerts, OUTPUT_DIR / "report.html"
+    )
     print(f"{len(facts)} online, {len(failures)} offline, {len(alerts)} alert(s). Report: {report}")
 
 
