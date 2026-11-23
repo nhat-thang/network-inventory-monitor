@@ -1,7 +1,7 @@
 """MikroTik RouterOS routers (tested on CHR 7.24.6)."""
 
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from core.models import InterfaceStatus, OspfNeighbor
 from devices.base import NetworkDevice
@@ -138,12 +138,47 @@ class MikroTikDevice(NetworkDevice):
         text = self.send_command(self.commands["running_config"])
         return "\n".join(line for line in text.splitlines() if not line.startswith("# 20"))
 
+    @staticmethod
+    def _export_entries(text: str) -> List[Tuple[str, str]]:
+        """``/export`` text -> [(section, "add ..." | "set ...")], wrapped lines joined."""
+        joined = re.sub(r"\\\n\s*", "", text)
+        entries: List[Tuple[str, str]] = []
+        section = ""
+        for raw in joined.splitlines():
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            if line.startswith("/"):
+                section = line
+            elif line.startswith(("add ", "set ")) and section:
+                entries.append((section, line))
+        return entries
+
+    def rollback_commands(self, current: str, target: str) -> List[str]:
+        """Diff two ``/export`` outputs into RouterOS commands.
+
+        - ``add`` entries only in ``current`` are removed (newest first) with
+          ``remove [find <same fields>]``;
+        - ``add`` and ``set`` entries only in ``target`` are applied again.
+        A ``set`` that exists only in ``current`` cannot be undone without
+        knowing the default value, so it is left as is.
+        """
+        now, wanted = self._export_entries(current), self._export_entries(target)
+        wanted_set, now_set = set(wanted), set(now)
+        commands = [
+            f"{section} remove [find {line[4:]}]"
+            for section, line in reversed(now)
+            if line.startswith("add ") and (section, line) not in wanted_set
+        ]
+        commands += [f"{section} {line}" for section, line in wanted if (section, line) not in now_set]
+        return commands
+
     def _apply_config(self, lines: List[str]) -> str:
         # RouterOS applies every command immediately and saves it automatically.
         output = []
         for line in lines:
-            reply = self._connection.send_command(line, expect_string=r"\] >")
-            if re.search(r"failure:|syntax error|bad command|expected ", reply):
+            reply = self._connection.send_command(line, expect_string=r"\] >", cmd_verify=False)
+            if re.search(r"failure:|syntax error|bad command|expected |no such item|input does not match", reply):
                 raise RuntimeError(f"{line!r}: {reply.strip()}")
             output.append(f"{line}\n{reply}")
         return "\n".join(output)

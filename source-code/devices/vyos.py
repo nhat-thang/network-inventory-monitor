@@ -134,6 +134,24 @@ class VyOSDevice(NetworkDevice):
         return float(match.group(1)) if match else None
 
     # ---------------------------------------------------------------- config
+    _NEVER_TOUCH = ("authentication", "login user")
+
+    def rollback_commands(self, current: str, target: str) -> List[str]:
+        """Diff two ``show configuration commands`` outputs into delete/set commands.
+
+        Lines only in ``current`` are deleted (newest first), lines only in
+        ``target`` are set again. Login/password lines are never touched.
+        """
+        def lines(text: str) -> List[str]:
+            return [line.strip() for line in text.splitlines()
+                    if line.strip().startswith("set ") and not any(k in line for k in self._NEVER_TOUCH)]
+
+        now, wanted = lines(current), lines(target)
+        wanted_set, now_set = set(wanted), set(now)
+        deletes = ["delete " + line[4:] for line in reversed(now) if line not in wanted_set]
+        sets = [line for line in wanted if line not in now_set]
+        return deletes + sets
+
     def _apply_config(self, lines: List[str]) -> str:
         output = self._connection.send_config_set(lines, exit_config_mode=False)
         output += self._connection.commit()

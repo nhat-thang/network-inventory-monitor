@@ -5,7 +5,7 @@ import pytest
 from core.connection_manager import ConnectionManager
 from core.credentials import Credentials
 from core.exceptions import DeviceTimeoutError, UnsupportedDeviceError
-from devices import CiscoIOSDevice, DeviceFactory, NetworkDevice, VyOSDevice
+from devices import CiscoIOSDevice, DeviceFactory, MikroTikDevice, NetworkDevice, VyOSDevice
 
 CREDS = Credentials("admin", "secret-password")
 
@@ -17,6 +17,7 @@ def record(name, device_type):
 def test_factory_builds_the_right_subclass():
     assert isinstance(DeviceFactory.create(record("R1", "cisco_ios"), CREDS), CiscoIOSDevice)
     assert isinstance(DeviceFactory.create(record("VY1", "vyos"), CREDS), VyOSDevice)
+    assert isinstance(DeviceFactory.create(record("R2", "mikrotik_routeros"), CREDS), MikroTikDevice)
 
 
 def test_factory_rejects_unknown_type():
@@ -26,9 +27,11 @@ def test_factory_rejects_unknown_type():
 
 def test_polymorphism_same_call_different_behaviour():
     devices = [DeviceFactory.create(record("R1", "cisco_ios"), CREDS),
+               DeviceFactory.create(record("R2", "mikrotik_routeros"), CREDS),
                DeviceFactory.create(record("VY1", "vyos"), CREDS)]
     backup_commands = {d.vendor: d.commands["running_config"] for d in devices}
     assert backup_commands == {"Cisco IOS": "show running-config",
+                               "MikroTik RouterOS": "/export",
                                "VyOS": "show configuration commands"}
 
 

@@ -139,15 +139,27 @@ def cmd_deploy_ospf(args: argparse.Namespace) -> None:
     inventory = Inventory(INVENTORY_FILE).load()
     records = inventory.filter(group=args.group, role=args.role, tag=args.tag)
     pusher = ConfigPusher(BASE_DIR / "provisioning" / "templates", BackupManager(OUTPUT_DIR / "backups"))
+    failed = []
     for record, device in zip(records, inventory.build_devices(records)):
+        if record["name"] not in variables:
+            print(f"--- {device.name}: no entry in ospf_vars.yaml, skipped ---")
+            continue
         lines = pusher.render(device, record["device_type"], variables[record["name"]])
         if args.dry_run:
-            print(f"--- {device.name} (dry-run) ---")
-            print(device.push_config(lines, dry_run=True))
+            print(f"--- {device.name} (dry-run, {len(lines)} line(s)) ---")
+            print(pusher.deploy(device, lines, dry_run=True))
             continue
-        with device:
-            print(f"--- {device.name} ---")
-            print(pusher.deploy(device, lines))
+        print(f"--- {device.name} ---")
+        try:  # one failing device must not stop the others
+            with device:
+                pusher.deploy(device, lines)
+            print(f"OK: {len(lines)} line(s) applied")
+        except NetworkAutomationError as exc:
+            logger.error("%s", exc)
+            print(f"FAILED: {exc}")
+            failed.append(device.name)
+    if failed:
+        print(f"Failed on: {', '.join(failed)}")
 
 
 def build_parser() -> argparse.ArgumentParser:

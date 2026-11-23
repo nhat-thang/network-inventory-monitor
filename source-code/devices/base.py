@@ -212,6 +212,14 @@ class NetworkDevice(ABC):
         """Return the current running configuration as text."""
         return self.send_command(self.commands["running_config"])
 
+    def rollback_commands(self, current: str, target: str) -> List[str]:
+        """Commands that turn the ``current`` config text back into ``target``.
+
+        Vendor-specific; platforms without a safe way to compute this raise
+        ``NotImplementedError`` and ``BackupManager.rollback`` reports it.
+        """
+        raise NotImplementedError(f"{self.vendor}: rollback is not supported")
+
     def push_config(self, lines: List[str], dry_run: bool = False) -> str:
         """Apply configuration lines; with ``dry_run`` only return what would be sent."""
         if dry_run:
