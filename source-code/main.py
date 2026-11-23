@@ -14,7 +14,14 @@ from collectors import FactsCollector
 from core.connection_manager import ConnectionManager
 from core.exceptions import NetworkAutomationError
 from inventory import Inventory
-from monitoring import HighCpuRule, InterfaceDownRule, MonitoringEngine, OspfNeighborLostRule
+from monitoring import (
+    ConfigChangedRule,
+    HighCpuRule,
+    InterfaceDownRule,
+    MonitoringEngine,
+    OspfNeighborLostRule,
+    RebootRule,
+)
 from provisioning import ConfigPusher
 from reporting import AppLogger, HtmlReport
 
@@ -78,7 +85,13 @@ def cmd_scan(args: argparse.Namespace) -> None:
     devices = _selected_devices(args)
     facts, failures = FactsCollector(ConnectionManager(args.workers)).collect(devices)
     engine = MonitoringEngine(
-        [InterfaceDownRule(), HighCpuRule(args.cpu_threshold), OspfNeighborLostRule()],
+        [
+            InterfaceDownRule(),
+            HighCpuRule(args.cpu_threshold),
+            OspfNeighborLostRule(),
+            RebootRule(),
+            ConfigChangedRule(),
+        ],
         snapshot_dir=OUTPUT_DIR / "snapshots",
     )
     alerts = engine.evaluate(facts, failures)
